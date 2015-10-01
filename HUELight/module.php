@@ -75,8 +75,13 @@ class HUELight extends IPSModule {
     IPS_SetIcon($briId, 'Sun');
     IPS_SetPosition($briId, 5);
 
-    $hueId = $this->RegisterVariableInteger("HUE", "Hue");
-    IPS_SetHidden($hueId, true);
+    if ($lightFeature == 0 || $lightFeature == 1) {
+      $hueId = $this->RegisterVariableInteger("HUE", "Hue");
+      IPS_SetHidden($hueId, true);
+    } else {
+      $delete = @IPS_GetObjectIDByIdent("HUE", $this->InstanceID);
+      if ($delete !== false) IPS_DeleteVariable($delete);
+    }
 
     if ($lightFeature == 0) {
       IPS_SetVariableCustomProfile($cmId, 'ColorModeSelect.Hue');
