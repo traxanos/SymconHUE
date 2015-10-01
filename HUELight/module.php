@@ -119,9 +119,9 @@ class HUELight extends IPSModule {
 
     SetValueBoolean($stateId, $state['on']);
     SetValueInteger($briId, round($state['bri'] * 100 / 254));
-    if ($satId) SetValueInteger($satId, round($state['sat'] * 100 / 254));
-    if ($hueId) SetValueInteger($hueId, $state['hue']);
-    if ($ctId) SetValueInteger($ctId, 100 - round(( $state['ct'] - 153) * 100 / 347));
+    if (@$satId) SetValueInteger($satId, round($state['sat'] * 100 / 254));
+    if (@$hueId) SetValueInteger($hueId, $state['hue']);
+    if (@$ctId) SetValueInteger($ctId, 100 - round(( $state['ct'] - 153) * 100 / 347));
 
     switch (@$state['colormode']) {
       case 'xy':
@@ -130,12 +130,12 @@ class HUELight extends IPSModule {
         SetValueInteger($colorId, hexdec($hex));
         IPS_SetHidden($colorId, false);
         IPS_SetHidden($satId, false);
-        if ($ctId) IPS_SetHidden($ctId, true);
-        if ($cmId) SetValueInteger($cmId, 0);
+        if (@$ctId) IPS_SetHidden($ctId, true);
+        if (@$cmId) SetValueInteger($cmId, 0);
         break;
       case 'ct':
-        if($colorId) IPS_SetHidden($colorId, true);
-        if($satId) IPS_SetHidden($satId, true);
+        if(@$colorId) IPS_SetHidden($colorId, true);
+        if(@$satId) IPS_SetHidden($satId, true);
         IPS_SetHidden($ctId, false);
         SetValueInteger($cmId, 1);
         break;
