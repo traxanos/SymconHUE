@@ -119,23 +119,23 @@ class HUELight extends IPSModule {
 
     SetValueBoolean($stateId, $state['on']);
     SetValueInteger($briId, round($state['bri'] * 100 / 254));
-    if (isset($satId)) SetValueInteger($satId, round($state['sat'] * 100 / 254));
-    if (isset($hueId)) SetValueInteger($hueId, $state['hue']);
-    if (isset($ctId)) SetValueInteger($ctId, 100 - round(( $state['ct'] - 153) * 100 / 347));
+    if ($satId) SetValueInteger($satId, round($state['sat'] * 100 / 254));
+    if ($hueId) SetValueInteger($hueId, $state['hue']);
+    if ($ctId) SetValueInteger($ctId, 100 - round(( $state['ct'] - 153) * 100 / 347));
 
-    switch ($state['colormode']) {
+    switch (@$state['colormode']) {
       case 'xy':
       case 'hs':
         $hex = $this->HSV2HEX($state['hue'], $state['sat'], $state['bri']);
         SetValueInteger($colorId, hexdec($hex));
         IPS_SetHidden($colorId, false);
         IPS_SetHidden($satId, false);
-        if (isset($ctId)) IPS_SetHidden($ctId, true);
-        if (isset($cmId)) SetValueInteger($cmId, 0);
+        if ($ctId) IPS_SetHidden($ctId, true);
+        if ($cmId) SetValueInteger($cmId, 0);
         break;
       case 'ct':
-        if(isset($colorId)) IPS_SetHidden($colorId, true);
-        if(isset($satId)) IPS_SetHidden($satId, true);
+        if($colorId) IPS_SetHidden($colorId, true);
+        if($satId) IPS_SetHidden($satId, true);
         IPS_SetHidden($ctId, false);
         SetValueInteger($cmId, 1);
         break;
@@ -182,9 +182,9 @@ class HUELight extends IPSModule {
     $cmValue = $cmId ? GetValueInteger($cmId) : 0;
     $ctValue = $ctId ? (500 - round(347 * GetValueInteger($ctId) / 100)) : 0;
     $briValue = round(GetValueInteger($briId)*2.54);
-    $satValue = round(GetValueInteger($satId)*2.54);
-    $hueValue = GetValueInteger($hueId);
-    $colorValue = GetValueInteger($colorId);
+    $satValue = $satId ? round(GetValueInteger($satId)*2.54) : 0;
+    $hueValue = $hueId ? GetValueInteger($hueId) : 0;
+    $colorValue = $colorId ? GetValueInteger($colorId) : 0;
 
     switch ($key) {
       case 'STATE':
@@ -204,13 +204,15 @@ class HUELight extends IPSModule {
       case 'BRIGHTNESS':
         $briNewValue = $value;
         $stateNewValue = true;
-        if ($cmValue == '0') {
-          $newHex = $this->HSV2HEX($hueValue, $satValue, $briNewValue);
-          SetValueInteger($colorId, hexdec($newHex));
-          $hueNewValue = $hueValue;
-          $satNewValue = $satValue;
-        } else {
-          $ctNewValue = $ctValue;
+        if (IPS_GetProperty($this->InstanceID, 'LightFeatures') != 3) {
+          if ($cmValue == '0') {
+            $newHex = $this->HSV2HEX($hueValue, $satValue, $briNewValue);
+            SetValueInteger($colorId, hexdec($newHex));
+            $hueNewValue = $hueValue;
+            $satNewValue = $satValue;
+          } else {
+            $ctNewValue = $ctValue;
+          }
         }
         break;
       case 'SATURATION':
