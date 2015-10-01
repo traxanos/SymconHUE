@@ -1,0 +1,20 @@
+{
+  "elements": [
+    { "name": "Host", "type": "ValidationTextBox", "caption": "Host" },
+    { "name": "User", "type": "ValidationTextBox", "caption": "User" },
+    { "name": "LightsCategory", "type": "SelectCategory", "caption": "Lampenkategorie" },
+  ],
+  "actions": [
+    { "type": "Button", "label": "Lampen abgleichen", "onClick": "HUE_SyncDevices($id);" },
+    { "type": "Button", "label": "User registrieren", "onClick": "HUE_RegisterUser($id);" },
+    { "type": "Button", "label": "Status abgleichen", "onClick": "HUE_SyncStates($id);" }
+  ],
+  "status": [
+    { "code": 102, "icon": "active", "caption": "Bridge wurde erfolgreich geladen" },
+    { "code": 104, "icon": "inactive", "caption": "Bitte alle Konfigurationsparameter eintragen" },
+    { "code": 201, "icon": "error", "caption": "User ist nicht registirert" },
+    { "code": 202, "icon": "error", "caption": "User konnte nicht registriert werden. Butte drücken Sie den Knopf auf dem Bridge beim Registrieren." },
+    { "code": 203, "icon": "error", "caption": "Fehler 3" },
+    { "code": 299, "icon": "error", "caption": "Unbekannter Fehler aufgetreten" }
+  ]
+}
