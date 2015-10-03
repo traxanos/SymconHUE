@@ -10,6 +10,7 @@ class HUEBridge extends IPSModule {
     $this->RegisterPropertyString("Host", "");
     $this->RegisterPropertyString("User", "SymconHUE");
     $this->RegisterPropertyInteger("LightsCategory", 0);
+    $this->RegisterPropertyInteger("UpdateInterval", 5);
   }
 
   public function ApplyChanges() {
@@ -18,7 +19,39 @@ class HUEBridge extends IPSModule {
     $this->CategoryLights = 0;
 
     parent::ApplyChanges();
+
+    $this->RegisterTimer('UPDATE', $this->ReadPropertyString('UpdateInterval'), 'HUE_SyncStates($id)');
+
     $this->ValidateConfiguration();
+  }
+
+  protected function RegisterTimer($ident, $interval, $script) {
+    $id = @IPS_GetObjectIDByIdent($ident, $this->InstanceID);
+
+    if ($id && IPS_GetEvent($id)['EventType'] <> 1) {
+      IPS_DeleteEvent($id);
+      $id = 0;
+    }
+
+    if (!$id) {
+      $id = IPS_CreateEvent(1);
+      IPS_SetParent($id, $this->InstanceID);
+      IPS_SetIdent($id, $ident);
+    }
+
+    IPS_SetName($id, $ident);
+    IPS_SetHidden($id, true);
+    IPS_SetEventScript($id, "\$id = \$_IPS['TARGET'];\n$script;");
+
+    if (!IPS_EventExists($id)) throw new Exception("Ident with name $ident is used for wrong object type");
+
+    if (!($interval > 0)) {
+      IPS_SetEventCyclic($id, 0, 0, 0, 0, 1, 1);
+      IPS_SetEventActive($id, false);
+    } else {
+      IPS_SetEventCyclic($id, 0, 0, 0, 0, 1, $interval);
+      IPS_SetEventActive($id, true);
+    }
   }
 
   private function ValidateConfiguration() {
@@ -63,32 +96,18 @@ class HUEBridge extends IPSModule {
   public function Request($path, $data = null) {
     $host = $this->GetHost();
     $user = $this->GetUser();
-    $method = isset($data) ? "PUT" : "GET";
-    $json = json_encode($data);
 
-    $lenght = strlen($json);
-
-    $request = "${method} /api/{$user}{$path} HTTP/1.1\r\n";
-    $request .= "Host: ".$host."\r\n";
-    $request .= "User-Agent: SymconYAVR\r\n";
-    $request .= "Connection: keep-alive\r\n";
-    $request .= "Content-Type: text/json; charset=UTF-8\r\n";
-    $request .= "Content-Length: ".$lenght."\r\n";
-    $request .= "Pragma: no-cache\r\n";
-    $request .= "Cache-Control: no-cache\r\n\r\n";
-    if($method == 'PUT') $request .= $json;
-
-    $fp = fsockopen($host, 80) or die("Unable to connect!");
-    fputs($fp, $request);
-
-    $response = "";
-    while (!feof($fp)) {
-      $response .= fread($fp, 1024);
-    }
-
-    fclose($fp);
-    list($header, $result) = explode("\r\n\r\n", $response, 2);
-    $status = substr($header,9,3);
+    $client = curl_init();
+    curl_setopt($client, CURLOPT_URL, "http://$host:80/api/$user$path");
+    curl_setopt($client, CURLOPT_USERAGENT, "SymconHUE");
+    curl_setopt($client, CURLOPT_CONNECTTIMEOUT, 5);
+    curl_setopt($client, CURLOPT_TIMEOUT, 5);
+    curl_setopt($client, CURLOPT_RETURNTRANSFER, 1);
+    if (isset($data)) curl_setopt($client, CURLOPT_CUSTOMREQUEST, 'PUT');
+    if (isset($data)) curl_setopt($client, CURLOPT_POSTFIELDS, json_encode($data));
+    $result = curl_exec($client);
+    $status = curl_getinfo($client, CURLINFO_HTTP_CODE);
+    curl_close($client);
 
     if ($status != '200') {
       throw new Exception("Response invalid. Code $status");
@@ -108,38 +127,27 @@ class HUEBridge extends IPSModule {
   }
 
   public function RegisterUser() {
-
     $host = $this->GetHost();
     $json = json_encode(array('username' => $this->GetUser(), 'devicetype' => "IPS"));
     $lenght = strlen($json);
 
-    $request = "POST /api HTTP/1.1\r\n";
-    $request .= "Host: ".$host."\r\n";
-    $request .= "User-Agent: SymconYAVR\r\n";
-    $request .= "Connection: keep-alive\r\n";
-    $request .= "Content-Type: text/json; charset=UTF-8\r\n";
-    $request .= "Content-Length: ".$lenght."\r\n";
-    $request .= "Pragma: no-cache\r\n";
-    $request .= "Cache-Control: no-cache\r\n\r\n";
-    $request .= $json;
-
-    $fp = fsockopen($host, 80) or die("Unable to connect!");
-    fputs($fp, $request);
-
-    $response = "";
-    while (!feof($fp)) {
-      $response .= fread($fp, 1024);
-    }
-
-    fclose($fp);
-    list($header, $result) = explode("\r\n\r\n", $response, 2);
-    $status = substr($header,9,3);
+    $client = curl_init();
+    curl_setopt($client, CURLOPT_URL, "http://$host:80/api");
+    curl_setopt($client, CURLOPT_USERAGENT, "SymconHUE");
+    curl_setopt($client, CURLOPT_CONNECTTIMEOUT, 5);
+    curl_setopt($client, CURLOPT_TIMEOUT, 5);
+    curl_setopt($client, CURLOPT_RETURNTRANSFER, 1);
+    curl_setopt($client, CURLOPT_POST, true);
+    curl_setopt($client, CURLOPT_POSTFIELDS, $json);
+    $result = curl_exec($client);
+    $status = curl_getinfo($client, CURLINFO_HTTP_CODE);
+    curl_close($client);
 
     if ($status != '200') {
       throw new Exception("Response invalid. Code $status");
     } else {
       $result = json_decode($result);
-      print_r($result);
+      //print_r($result);
       if(@isset($result[0]->error)) {
         $this->SetStatus(202);
       } else {
@@ -177,7 +185,6 @@ class HUEBridge extends IPSModule {
       IPS_ApplyChanges($deviceId);
       HUE_RequestData($deviceId);
     }
-    echo "Fertig";
   }
 
   public function SyncStates() {
@@ -190,7 +197,6 @@ class HUEBridge extends IPSModule {
       $deviceId = $this->GetDeviceByUniqueId($uniqueId);
       if($deviceId > 0) HUE_ApplyData($deviceId, $light);
     }
-    echo "Fertig";
   }
 
   public function GetDeviceByUniqueId($uniqueId) {

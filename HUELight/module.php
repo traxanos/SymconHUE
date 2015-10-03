@@ -1,5 +1,4 @@
-<?
-class HUELight extends IPSModule {
+<? class HUELight extends IPSModule {
   public function Create() {
     parent::Create();
     $this->RegisterPropertyInteger("LightId", 0);
@@ -37,9 +36,23 @@ class HUELight extends IPSModule {
      * Properties
      */
 
-    IPS_SetProperty($this->InstanceID, 'ModelId', utf8_decode((string)$data['modelid']));
-    IPS_SetProperty($this->InstanceID, 'Type',  utf8_decode((string)$data['type']));
-    IPS_SetName($this->InstanceID, utf8_decode((string)$data['name']));
+    $dirty = false;
+
+    $modelid = utf8_decode((string)$data['modelid']);
+    $type = utf8_decode((string)$data['type']);
+    $name = utf8_decode((string)$data['name']);
+    if (IPS_GetProperty($this->InstanceID, 'ModelId') != $modelid) {
+      IPS_SetProperty($this->InstanceID, 'ModelId', $modelid);
+      $dirty = true;
+    }
+    if (IPS_GetProperty($this->InstanceID, 'Type') != $type) {
+      IPS_SetProperty($this->InstanceID, 'Type', $type);
+      $dirty = true;
+    }
+    if (IPS_GetName($this->InstanceID) != $name) {
+      IPS_SetName($this->InstanceID, $name);
+      $dirty = true;
+    }
 
     // Setze den Modus
     if (isset($state['ct']) && isset($state['hue'])) {
@@ -55,7 +68,13 @@ class HUELight extends IPSModule {
       // Lux Lamp
       $lightFeature = 3;
     }
-    IPS_SetProperty($this->InstanceID, 'LightFeatures', $lightFeature);
+
+    if (IPS_GetProperty($this->InstanceID, 'LightFeatures') != $lightFeature) {
+      IPS_SetProperty($this->InstanceID, 'LightFeatures', $lightFeature);
+      $dirty = true;
+    }
+
+    if ($dirty) IPS_ApplyChanges($this->InstanceID);
 
     /*
      * Variables
@@ -145,8 +164,6 @@ class HUELight extends IPSModule {
         SetValueInteger($cmId, 1);
         break;
     }
-
-    IPS_ApplyChanges($this->InstanceID);
   }
 
   public function RequestAction($key, $value) {
