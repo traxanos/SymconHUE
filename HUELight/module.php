@@ -1,4 +1,5 @@
-<? class HUELight extends IPSModule {
+<?
+class HUELight extends IPSModule {
   public function Create() {
     parent::Create();
     $this->RegisterPropertyInteger("LightId", 0);
@@ -182,7 +183,7 @@
     $this->SetValue($key, $value);
   }
 
-  function GetValue($key) {
+  public function GetValue($key) {
     switch ($key) {
       default:
         $value = GetValue(@IPS_GetObjectIDByIdent($key, $this->InstanceID));
@@ -191,7 +192,7 @@
     return $value;
   }
 
-  function SetValue($key, $value) {
+  public function SetValue($key, $value) {
     $stateId = IPS_GetObjectIDByIdent('STATE', $this->InstanceID);
     $cmId = IPS_GetObjectIDByIdent('COLOR_MODE', $this->InstanceID);
     $ctId = @IPS_GetObjectIDByIdent('COLOR_TEMPERATURE', $this->InstanceID);
@@ -303,14 +304,14 @@
   }
 
 
-  private function HEX2HSV($h) {
+  protected function HEX2HSV($h) {
     $r = substr($h, 0, 2);
     $g = substr($h, 2, 2);
     $b = substr($h, 4, 2);
     return $this->RGB2HSV(hexdec($r), hexdec($g), hexdec($b));
   }
 
-  private function HSV2HEX($h, $s, $v) {
+  protected function HSV2HEX($h, $s, $v) {
     $rgb = $this->HSV2RGB($h, $s, $v);
 
     $r = str_pad(dechex($rgb['r']), 2, 0, STR_PAD_LEFT);
@@ -320,7 +321,7 @@
     return $r.$g.$b;
   }
 
-  private function RGB2HSV($r, $g, $b) {
+  protected function RGB2HSV($r, $g, $b) {
     if (!($r >= 0 && $r <= 255)) throw new Exception("h property must be between 0 and 255, but is: ${r}");
     if (!($g >= 0 && $g <= 255)) throw new Exception("s property must be between 0 and 255, but is: ${g}");
     if (!($b >= 0 && $b <= 255)) throw new Exception("v property must be between 0 and 255, but is: ${b}");
@@ -352,7 +353,7 @@
     return array('h' => round($h), 's' => round($s), 'v' => round($v));
   }
 
-  private function HSV2RGB($h, $s, $v) {
+  protected function HSV2RGB($h, $s, $v) {
     if (!($h >= 0 && $h <= (21845*3))) throw new Exception("h property must be between 0 and 65535, but is: ${h}");
     if (!($s >= 0 && $s <= 254)) throw new Exception("s property must be between 0 and 255, but is: ${s}");
     if (!($v >= 0 && $v <= 254)) throw new Exception("v property must be between 0 and 255, but is: ${v}");
