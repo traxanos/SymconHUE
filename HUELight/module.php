@@ -38,15 +38,16 @@ class HUELight extends IPSModule {
 
   public function ApplyData($data) {
     $data = (array)$data;
-    $state = (array)$data['state'];
+    $state = (array)@$data['state'];
 
     // Status
     if ($this->ReadPropertyString("UniqueId") == '') {
-      $this->SetState(104);
-    } elseif ($data['reachable']) {
-      $this->SetState(102);
+      $this->SetStatus(104);
+      return false;
+    } elseif ($state['reachable']) {
+      $this->SetStatus(102);
     } else {
-      $this->SetState(201);
+      $this->SetStatus(201);
     }
 
     /*
