@@ -39,7 +39,9 @@
     }
   ],
   "status": [
+    { "code": 101, "icon": "active", "caption": "Lampe wird erstellt." },
     { "code": 102, "icon": "active", "caption": "Lampe ist aktiv." },
+    { "code": 103, "icon": "active", "caption": "Lampe wird gelöscht." },
     { "code": 104, "icon": "inactive", "caption": "Bitte die Lampen über die Bridge anlegen lassen." },
     { "code": 201, "icon": "error", "caption": "Die Lampe ist nicht erreichbar." }
   ]
