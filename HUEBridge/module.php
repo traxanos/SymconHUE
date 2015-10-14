@@ -98,6 +98,12 @@ class HUEBridge extends IPSModule {
     $host = $this->GetHost();
     $user = $this->GetUser();
 
+    // Workaround for RPi
+    if (!IPS_SemaphoreEnter('CURL', 5000)) {
+      IPS_LogMessage('CURL', 'Semaphore Timeout');
+      exit;
+    }
+
     $client = curl_init();
     curl_setopt($client, CURLOPT_URL, "http://$host:80/api/$user$path");
     curl_setopt($client, CURLOPT_USERAGENT, "SymconHUE");
@@ -109,6 +115,9 @@ class HUEBridge extends IPSModule {
     $result = curl_exec($client);
     $status = curl_getinfo($client, CURLINFO_HTTP_CODE);
     curl_close($client);
+
+    // Workaround for RPi
+    IPS_SemaphoreLeave('CURL');
 
     if ($status != '200') {
       $this->SetStatus(201);
