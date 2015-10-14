@@ -4,7 +4,7 @@ SymconHUE ist eine Erweiterung für die Heimautomatisierung IP Symcon. Diese Erw
 
 ## Einrichtung
 
-Die Einrichtung erfolgt über Modulverwaltung von Symcon. Nach der Installation des Moduls sollte der Dienst neugestartet werden. Jetzt kann eine neue Instanz vom Typ "_Philips Hue Bridge_" angelegt und konfiguriert werden. In der Konfigurationsmaske könnt ihr auch den _User_ direkt anlernen. Dazu drückt ihr **zuerst** den Knopf auf der HUE Bridge und dann den Knopf "User registieren" betätigen. Nach dem drücken des "Lampen abgleichen"-Schalters, wird für jede Lampe eine Instanz in der angegebenen Lampenkategorie angelegt. Ihr müsst somit **nicht** selber für jede Lampe eine Instanz anlegen.
+Die Einrichtung erfolgt über die Modulverwaltung von Symcon. Nach der Installation des Moduls sollte der Dienst neugestartet werden. Jetzt kann eine neue Instanz vom Typ "_Philips Hue Bridge_" angelegt und konfiguriert werden. In der Konfigurationsmaske könnt ihr auch den _User_ direkt anlernen. Dazu drückt ihr **zuerst** den Knopf auf der HUE Bridge und dann den Knopf "User registieren" betätigen. Nach dem drücken des "Lampen abgleichen"-Schalters, wird für jede Lampe eine Instanz in der angegebenen Lampenkategorie angelegt. Ihr müsst somit **nicht** selber für jede Lampe eine Instanz anlegen.
 
 ## Einstellungen
 
