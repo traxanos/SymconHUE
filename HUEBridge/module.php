@@ -1,4 +1,5 @@
-<?
+<?php
+
 class HUEBridge extends IPSModule {
 
   private $Host = "";
@@ -110,17 +111,23 @@ class HUEBridge extends IPSModule {
     curl_close($client);
 
     if ($status != '200') {
-      throw new Exception("Response invalid. Code $status");
+      $this->SetStatus(201);
+      return false;
     } else {
       if (isset($data)) {
         $result = json_decode($result);
         if (count($result) > 0) {
           foreach ($result as $item) {
-            if (@$item->error) return false;
+            if (@$item->error) {
+              $this->SetStatus(299);
+              return false;
+            }
           }
         }
+        $this->SetStatus(102);
         return true;
       } else {
+        $this->SetStatus(102);
         return json_decode($result);
       }
     }
@@ -156,6 +163,10 @@ class HUEBridge extends IPSModule {
     }
   }
 
+  /*
+   * HUE_SyncDevices($bridgeId)
+   * Abgleich aller Lampen
+   */
   public function SyncDevices() {
     $lightsCategoryId = $this->GetLightsCategory();
 
@@ -187,6 +198,10 @@ class HUEBridge extends IPSModule {
     }
   }
 
+  /*
+   * HUE_SyncStates($bridgeId)
+   * Abgleich des Status aller Lampen
+   */
   public function SyncStates() {
     $lightsCategoryId = $this->ReadPropertyInteger("LightsCategory");
     if(!(@$lightsCategoryId > 0)) throw new Exception("Lampenkategorie muss ausgefüllt sein");
@@ -199,6 +214,10 @@ class HUEBridge extends IPSModule {
     }
   }
 
+  /*
+   * HUE_GetDeviceByUniqueId($bridgeId, $uniqueId)
+   * Liefert zu einer UniqueID die passende Lampeninstanz
+   */
   public function GetDeviceByUniqueId($uniqueId) {
     $deviceIds = IPS_GetInstanceListByModuleID($this->DeviceGuid());
     foreach($deviceIds as $deviceId) {
@@ -213,4 +232,3 @@ class HUEBridge extends IPSModule {
   }
 
 }
-?>

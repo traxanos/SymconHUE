@@ -1,5 +1,7 @@
-<?
+<?php
+
 class HUELight extends IPSModule {
+
   public function Create() {
     parent::Create();
     $this->RegisterPropertyInteger("LightId", 0);
@@ -23,6 +25,11 @@ class HUELight extends IPSModule {
     return ($instance['ConnectionID'] > 0) ? $instance['ConnectionID'] : false;
   }
 
+  /*
+   * HUE_RequestData($lightId)
+   * Abgleich des Status einer Lampe (HUE_SyncStates sollte bevorzugewerden,
+   * da direkt alle Lampen abgeglichen werden mit nur 1 Request zur HUE Bridge)
+   */
   public function RequestData() {
     $lightId = $this->ReadPropertyInteger("LightId");
     $light = HUE_Request($this->GetBridge(), "/lights/$lightId", null);
@@ -32,6 +39,15 @@ class HUELight extends IPSModule {
   public function ApplyData($data) {
     $data = (array)$data;
     $state = (array)$data['state'];
+
+    // Status
+    if ($this->ReadPropertyString("UniqueId") == '') {
+      $this->SetState(104);
+    } elseif ($data['reachable']) {
+      $this->SetState(102);
+    } else {
+      $this->SetState(201);
+    }
 
     /*
      * Properties
@@ -183,6 +199,10 @@ class HUELight extends IPSModule {
     $this->SetValue($key, $value);
   }
 
+  /*
+   * HUE_GetValue($lightId, $key)
+   * Liefert einen Lampenparameter (siehe HUE_SetValue)
+   */
   public function GetValue($key) {
     switch ($key) {
       default:
@@ -192,6 +212,19 @@ class HUELight extends IPSModule {
     return $value;
   }
 
+  /*
+   * HUE_SetValue($lightId, $key, $value)
+   * Anpassung eines Lampenparameter
+   *
+   * Mögliche Keys:
+   *
+   * STATE -> true oder false für an/aus
+   * COLOR_TEMPERATURE -> Farbtemperatur (153 bis 500)
+   * SATURATION -> Sättigung (0 bis 255)
+   * BRIGHTNESS -> Helligkeit in (0 bis 255)
+   * COLOR -> Farbe als integer
+   *
+   */
   public function SetValue($key, $value) {
     $stateId = IPS_GetObjectIDByIdent('STATE', $this->InstanceID);
     $cmId = IPS_GetObjectIDByIdent('COLOR_MODE', $this->InstanceID);
@@ -399,4 +432,3 @@ class HUELight extends IPSModule {
   }
 
 }
-?>

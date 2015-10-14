@@ -11,11 +11,10 @@
     { "type": "Button", "label": "Status abgleichen", "onClick": "HUE_SyncStates($id); echo 'Fertig';" }
   ],
   "status": [
-    { "code": 102, "icon": "active", "caption": "Bridge wurde erfolgreich geladen" },
-    { "code": 104, "icon": "inactive", "caption": "Bitte alle Konfigurationsparameter eintragen" },
-    { "code": 201, "icon": "error", "caption": "User ist nicht registirert" },
-    { "code": 202, "icon": "error", "caption": "User konnte nicht registriert werden. Butte drÃ¼cken Sie den Knopf auf dem Bridge beim Registrieren." },
-    { "code": 203, "icon": "error", "caption": "Fehler 3" },
-    { "code": 299, "icon": "error", "caption": "Unbekannter Fehler aufgetreten" }
+    { "code": 102, "icon": "active", "caption": "Bridge wurde erfolgreich geladen." },
+    { "code": 104, "icon": "inactive", "caption": "Bitte alle Konfigurationsparameter eintragen." },
+    { "code": 201, "icon": "error", "caption": "User ist nicht registirert." },
+    { "code": 202, "icon": "error", "caption": "User konnte nicht registriert werden. Butte drücken Sie den Knopf auf dem Bridge beim Registrieren." },
+    { "code": 299, "icon": "error", "caption": "Unbekannter Fehler aufgetreten." }
   ]
 }

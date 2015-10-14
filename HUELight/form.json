@@ -37,5 +37,10 @@
       "label": "Status neu einlesen",
       "onClick": "HUE_RequestData($id);"
     }
+  ],
+  "status": [
+    { "code": 102, "icon": "active", "caption": "Lampe ist aktiv." },
+    { "code": 104, "icon": "inactive", "caption": "Bitte die Lampen über die Bridge anlegen lassen." },
+    { "code": 201, "icon": "error", "caption": "Die Lampe ist nicht erreichbar." }
   ]
 }

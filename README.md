@@ -27,18 +27,18 @@ Die Einrichtung erfolgt über die Modulverwaltung von Symcon. Nach der Installat
 ## Funktionen
 
 	// Abgleich aller Lampen
-	HUE_SyncDevices($bridgeId); 
-	
+	HUE_SyncDevices($bridgeId);
+
 	// Abgleich des Status aller Lampen
 	HUE_SyncStates($bridgeId);
-	
+
 	// Liefert zu einer UniqueID die passende Lampeninstanz
 	HUE_GetDeviceByUniqueId($bridgeId, $uniqueId);
 
 	// Abgleich des Status einer Lampe (HUE_SyncStates sollte bevorzugewerden,
 	// da direkt alle Lampen abgeglichen werden mit nur 1 Request zur HUE Bridge)
-	HUE_RequestData($lightId);	
-	
+	HUE_RequestData($lightId);
+
 	// Anpassung eines Lampenparameter
 	//
 	// Mögliche Keys:
@@ -47,7 +47,7 @@ Die Einrichtung erfolgt über die Modulverwaltung von Symcon. Nach der Installat
 	// SATURATION -> Sättigung (0 bis 255)
 	// BRIGHTNESS -> Helligkeit in (0 bis 255)
 	// COLOR -> Farbe als integer
-	HUE_SetValue($light, $key, $value);
-	
+	HUE_SetValue($lightId, $key, $value);
+
 	// Liefert einen Lampenparameter (siehe HUE_SetValue)
 	HUE_GetValue($lightId, $key);
