@@ -159,8 +159,11 @@ class HUELight extends IPSModule {
      * Values
      */
 
-    SetValueBoolean($stateId, $state['on']);
-    if (!$state['reachable']) SetValueBoolean($stateId, false);
+    if (!$state['reachable']) {
+      SetValueBoolean($stateId, false);
+    } else {
+      SetValueBoolean($stateId, $state['on']);
+    }
     SetValueInteger($briId, round($state['bri'] * 100 / 254));
     if (@$satId) SetValueInteger($satId, round($state['sat'] * 100 / 254));
     if (@$hueId) SetValueInteger($hueId, $state['hue']);
