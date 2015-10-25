@@ -17,7 +17,7 @@ class HUELight extends IPSModule {
 
   public function ApplyChanges() {
     parent::ApplyChanges();
-    $this->ConnectParent("{F6F3A773-F685-4FD2-805E-83FD99407EE8}");
+    $this->ConnectParent("{9C6FB2C8-0155-4A59-97A7-2F6D62608908}");
   }
 
   protected function GetBridge() {
