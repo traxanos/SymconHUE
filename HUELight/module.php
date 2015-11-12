@@ -251,6 +251,12 @@ class HUELight extends IPSModule {
       case 'STATE':
         $stateNewValue = $value;
         break;
+      case 'EFFECT':
+        $effect = $value;
+        break;
+      case 'ALERT':
+        $alert = $value;
+        break;
       case 'COLOR':
         $colorNewValue = $value;
         $stateNewValue = true;
@@ -312,6 +318,12 @@ class HUELight extends IPSModule {
     }
 
     $changes = array();
+    if(isset($effect)) {
+      $changes['effect'] = $effect;
+    }
+    if(isset($alert)) {
+      $changes['alert'] = $alert;
+    }
     if (isset($stateNewValue)) {
       SetValueBoolean($stateId, $stateNewValue);
       $changes['on'] = $stateNewValue;
