@@ -254,6 +254,9 @@ class HUELight extends IPSModule {
       case 'EFFECT':
         $effect = $value;
         break;
+      case 'TRANSITIONTIME':
+        $transitiontime = $value;
+        break;
       case 'ALERT':
         $alert = $value;
         break;
@@ -323,6 +326,9 @@ class HUELight extends IPSModule {
     }
     if(isset($alert)) {
       $changes['alert'] = $alert;
+    }
+    if(isset($transitiontime)) {
+      $changes['transitiontime'] = $transitiontime;
     }
     if (isset($stateNewValue)) {
       SetValueBoolean($stateId, $stateNewValue);
