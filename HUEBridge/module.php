@@ -110,7 +110,10 @@ class HUEBridge extends IPSModule {
     $status = curl_getinfo($client, CURLINFO_HTTP_CODE);
     curl_close($client);
 
-    if ($status != '200') {
+    if ($status == '0') {
+      $this->SetStatus(203);
+      return false;
+    } elseif ($status != '200') {
       $this->SetStatus(201);
       return false;
     } else {
@@ -150,7 +153,10 @@ class HUEBridge extends IPSModule {
     $status = curl_getinfo($client, CURLINFO_HTTP_CODE);
     curl_close($client);
 
-    if ($status != '200') {
+    if ($status == '0') {
+      $this->SetStatus(203);
+      return false;
+    } elseif ($status != '200') {
       throw new Exception("Response invalid. Code $status");
     } else {
       $result = json_decode($result);
@@ -171,30 +177,32 @@ class HUEBridge extends IPSModule {
     $lightsCategoryId = $this->GetLightsCategory();
 
     $lights = $this->Request('/lights');
-    foreach ($lights as $lightId => $light) {
-      $name = utf8_decode((string)$light->name);
-      $uniqueId = (string)$light->uniqueid;
-      echo "$lightId. $name ($uniqueId)\n";
+    if ($lights) {
+      foreach ($lights as $lightId => $light) {
+        $name = utf8_decode((string)$light->name);
+        $uniqueId = (string)$light->uniqueid;
+        echo "$lightId. $name ($uniqueId)\n";
 
-      $deviceId = $this->GetDeviceByUniqueId($uniqueId);
+        $deviceId = $this->GetDeviceByUniqueId($uniqueId);
 
-      if ($deviceId == 0) {
-        $deviceId = IPS_CreateInstance($this->DeviceGuid());
-        IPS_SetProperty($deviceId, 'UniqueId', $uniqueId);
+        if ($deviceId == 0) {
+          $deviceId = IPS_CreateInstance($this->DeviceGuid());
+          IPS_SetProperty($deviceId, 'UniqueId', $uniqueId);
+        }
+
+        IPS_SetParent($deviceId, $lightsCategoryId);
+        IPS_SetProperty($deviceId, 'LightId', (integer)$lightId);
+        IPS_SetName($deviceId, $name);
+
+        // Verbinde Light mit Bridge
+        if (IPS_GetInstance($deviceId)['ConnectionID'] <> $this->InstanceID) {
+          @IPS_DisconnectInstance($deviceId);
+          IPS_ConnectInstance($deviceId, $this->InstanceID);
+        }
+
+        IPS_ApplyChanges($deviceId);
+        HUE_RequestData($deviceId);
       }
-
-      IPS_SetParent($deviceId, $lightsCategoryId);
-      IPS_SetProperty($deviceId, 'LightId', (integer)$lightId);
-      IPS_SetName($deviceId, $name);
-
-      // Verbinde Light mit Bridge
-      if (IPS_GetInstance($deviceId)['ConnectionID'] <> $this->InstanceID) {
-        @IPS_DisconnectInstance($deviceId);
-        IPS_ConnectInstance($deviceId, $this->InstanceID);
-      }
-
-      IPS_ApplyChanges($deviceId);
-      HUE_RequestData($deviceId);
     }
   }
 
@@ -207,10 +215,12 @@ class HUEBridge extends IPSModule {
     if(!(@$lightsCategoryId > 0)) throw new Exception("Lampenkategorie muss ausgefüllt sein");
 
     $lights = $this->Request('/lights');
-    foreach ($lights as $lightId => $light) {
-      $uniqueId = (string)$light->uniqueid;
-      $deviceId = $this->GetDeviceByUniqueId($uniqueId);
-      if($deviceId > 0) HUE_ApplyData($deviceId, $light);
+    if ($lights) {
+      foreach ($lights as $lightId => $light) {
+        $uniqueId = (string)$light->uniqueid;
+        $deviceId = $this->GetDeviceByUniqueId($uniqueId);
+        if($deviceId > 0) HUE_ApplyData($deviceId, $light);
+      }
     }
   }
 
