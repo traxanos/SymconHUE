@@ -44,7 +44,7 @@ class HUEBridge extends IPSModule {
     IPS_SetHidden($id, true);
     IPS_SetEventScript($id, "\$id = \$_IPS['TARGET'];\n$script;");
 
-    if (!IPS_EventExists($id)) throw new Exception("Ident with name $ident is used for wrong object type");
+    if (!IPS_EventExists($id)) IPS_LogMessage("SymconHUE", "Ident with name $ident is used for wrong object type");
 
     if (!($interval > 0)) {
       IPS_SetEventCyclic($id, 0, 0, 0, 0, 1, 1);
@@ -157,7 +157,7 @@ class HUEBridge extends IPSModule {
       $this->SetStatus(203);
       return false;
     } elseif ($status != '200') {
-      throw new Exception("Response invalid. Code $status");
+      IPS_LogMessage("SymconHUE", "Response invalid. Code $status");
     } else {
       $result = json_decode($result);
       //print_r($result);
@@ -175,34 +175,40 @@ class HUEBridge extends IPSModule {
    */
   public function SyncDevices() {
     $lightsCategoryId = $this->GetLightsCategory();
+    if(@$lightsCategoryId > 0) {
+      $lights = $this->Request('/lights');
+      if ($lights) {
+        foreach ($lights as $lightId => $light) {
+          $name = utf8_decode((string)$light->name);
+          $uniqueId = (string)$light->uniqueid;
+          echo "$lightId. $name ($uniqueId)\n";
 
-    $lights = $this->Request('/lights');
-    if ($lights) {
-      foreach ($lights as $lightId => $light) {
-        $name = utf8_decode((string)$light->name);
-        $uniqueId = (string)$light->uniqueid;
-        echo "$lightId. $name ($uniqueId)\n";
+          $deviceId = $this->GetDeviceByUniqueId($uniqueId);
 
-        $deviceId = $this->GetDeviceByUniqueId($uniqueId);
+          if ($deviceId == 0) {
+            $deviceId = IPS_CreateInstance($this->DeviceGuid());
+            IPS_SetProperty($deviceId, 'UniqueId', $uniqueId);
+          }
 
-        if ($deviceId == 0) {
-          $deviceId = IPS_CreateInstance($this->DeviceGuid());
-          IPS_SetProperty($deviceId, 'UniqueId', $uniqueId);
+          IPS_SetParent($deviceId, $lightsCategoryId);
+          IPS_SetProperty($deviceId, 'LightId', (integer)$lightId);
+          IPS_SetName($deviceId, $name);
+
+          // Verbinde Light mit Bridge
+          if (IPS_GetInstance($deviceId)['ConnectionID'] <> $this->InstanceID) {
+            @IPS_DisconnectInstance($deviceId);
+            IPS_ConnectInstance($deviceId, $this->InstanceID);
+          }
+
+          IPS_ApplyChanges($deviceId);
+          HUE_RequestData($deviceId);
         }
-
-        IPS_SetParent($deviceId, $lightsCategoryId);
-        IPS_SetProperty($deviceId, 'LightId', (integer)$lightId);
-        IPS_SetName($deviceId, $name);
-
-        // Verbinde Light mit Bridge
-        if (IPS_GetInstance($deviceId)['ConnectionID'] <> $this->InstanceID) {
-          @IPS_DisconnectInstance($deviceId);
-          IPS_ConnectInstance($deviceId, $this->InstanceID);
-        }
-
-        IPS_ApplyChanges($deviceId);
-        HUE_RequestData($deviceId);
       }
+      return true;
+    } else {
+      echo 'Lampen konnten nicht syncronisiert werden, da die Lampenkategorie nicht zugewiesen wurde.';
+      IPS_LogMessage('SymconHUE', 'Lampen konnten nicht syncronisiert werden, da die Lampenkategorie nicht zugewiesen wurde.');
+      return false;
     }
   }
 
@@ -211,9 +217,6 @@ class HUEBridge extends IPSModule {
    * Abgleich des Status aller Lampen
    */
   public function SyncStates() {
-    $lightsCategoryId = $this->ReadPropertyInteger("LightsCategory");
-    if(!(@$lightsCategoryId > 0)) throw new Exception("Lampenkategorie muss ausgefüllt sein");
-
     $lights = $this->Request('/lights');
     if ($lights) {
       foreach ($lights as $lightId => $light) {
@@ -238,7 +241,7 @@ class HUEBridge extends IPSModule {
   }
 
   private function DeviceGuid() {
-    return "{729BE8EB-6624-4C6B-B9E5-6E09482A3E36}";
+    return '{729BE8EB-6624-4C6B-B9E5-6E09482A3E36}';
   }
 
 }

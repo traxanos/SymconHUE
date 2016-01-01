@@ -43,6 +43,7 @@
     { "code": 102, "icon": "active", "caption": "Lampe ist aktiv." },
     { "code": 103, "icon": "active", "caption": "Lampe wird gelöscht." },
     { "code": 104, "icon": "inactive", "caption": "Bitte die Lampen über die Bridge anlegen lassen." },
-    { "code": 201, "icon": "error", "caption": "Die Lampe ist nicht erreichbar." }
+    { "code": 201, "icon": "error", "caption": "Die Lampe ist nicht erreichbar." },
+    { "code": 202, "icon": "error", "caption": "Es ist ein unbekannter Fehler aufgetreten." }
   ]
 }

@@ -33,7 +33,13 @@ class HUELight extends IPSModule {
   public function RequestData() {
     $lightId = $this->ReadPropertyInteger("LightId");
     $light = HUE_Request($this->GetBridge(), "/lights/$lightId", null);
-    $this->ApplyData($light);
+    if(is_array($light) && @$light[0]->error) {
+      $error = @$light[0]->error->description;
+      $this->SetStatus(202);
+      IPS_LogMessage("SymconHUE", "Es ist ein Fehler aufgetreten: $error");
+    } else {
+      $this->ApplyData($light);
+    }
   }
 
   public function ApplyData($data) {
