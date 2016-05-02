@@ -9,7 +9,7 @@ class HUEBridge extends IPSModule {
   public function Create() {
     parent::Create();
     $this->RegisterPropertyString("Host", "");
-    $this->RegisterPropertyString("User", "SymconHUE");
+    $this->RegisterPropertyString("User", "");
     $this->RegisterPropertyInteger("LightsCategory", 0);
     $this->RegisterPropertyInteger("UpdateInterval", 5);
   }
@@ -87,9 +87,6 @@ class HUEBridge extends IPSModule {
   private function GetUser() {
     if($this->User == '') {
       $this->User = $this->ReadPropertyString('User');
-      if (!preg_match('/[a-f0-9]{32}/i', $this->User)) {
-        $this->User = md5($this->User);
-      }
     }
     return $this->User;
   }
@@ -117,8 +114,8 @@ class HUEBridge extends IPSModule {
       $this->SetStatus(201);
       return false;
     } else {
+      $result = json_decode($result);
       if (isset($data)) {
-        $result = json_decode($result);
         if (count($result) > 0) {
           foreach ($result as $item) {
             if (@$item->error) {
@@ -131,14 +128,14 @@ class HUEBridge extends IPSModule {
         return true;
       } else {
         $this->SetStatus(102);
-        return json_decode($result);
+        return $result;
       }
     }
   }
 
   public function RegisterUser() {
     $host = $this->GetHost();
-    $json = json_encode(array('username' => $this->GetUser(), 'devicetype' => "IPS"));
+    $json = json_encode(array('devicetype' => "IPS"));
     $lenght = strlen($json);
 
     $client = curl_init();
@@ -160,7 +157,12 @@ class HUEBridge extends IPSModule {
       IPS_LogMessage("SymconHUE", "Response invalid. Code $status");
     } else {
       $result = json_decode($result);
-      //print_r($result);
+      if(@isset($result[0]->success->username) && $result[0]->success->username != '') {
+        $key = $result[0]->success->username;
+        IPS_LogMessage("SymconHUE","Benutzername:");
+        IPS_LogMessage("SymconHUE","$key");
+        print_r("Die Registrierung war erfolgreich. Der Benutzername muss aus dem Log in das entsprechende Feld kopiert werden!");
+      }
       if(@isset($result[0]->error)) {
         $this->SetStatus(202);
       } else {
