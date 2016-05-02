@@ -157,16 +157,18 @@ class HUEBridge extends IPSModule {
       IPS_LogMessage("SymconHUE", "Response invalid. Code $status");
     } else {
       $result = json_decode($result);
-      if(@isset($result[0]->success->username) && $result[0]->success->username != '') {
-        $key = $result[0]->success->username;
-        IPS_LogMessage("SymconHUE","Benutzername:");
-        IPS_LogMessage("SymconHUE","$key");
-        print_r("Die Registrierung war erfolgreich. Der Benutzername muss aus dem Log in das entsprechende Feld kopiert werden!");
-      }
       if(@isset($result[0]->error)) {
         $this->SetStatus(202);
       } else {
-        $this->SetStatus(102);
+        if(@isset($result[0]->success->username) && $result[0]->success->username != '') {
+          $key = $result[0]->success->username;
+          IPS_LogMessage("SymconHUE","Benutzername:");
+          IPS_LogMessage("SymconHUE","$key");
+          print_r("Die Registrierung war erfolgreich. Der Benutzername muss aus dem Log in das entsprechende Feld kopiert werden!");
+          $this->SetStatus(102);
+        } else {
+          $this->SetStatus(202);
+        }
       }
     }
   }
