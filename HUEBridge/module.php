@@ -115,6 +115,11 @@ class HUEBridge extends IPSModule {
       return false;
     } else {
       $result = json_decode($result);
+      if (is_array($result) && @isset($result[0]->error->description) && $result[0]->error->description == 'unauthorized user') {
+        $this->SetStatus(201);
+        return false;
+      }
+
       if (isset($data)) {
         if (count($result) > 0) {
           foreach ($result as $item) {
@@ -161,10 +166,10 @@ class HUEBridge extends IPSModule {
         $this->SetStatus(202);
       } else {
         if(@isset($result[0]->success->username) && $result[0]->success->username != '') {
-          $key = $result[0]->success->username;
-          IPS_LogMessage("SymconHUE","Benutzername:");
-          IPS_LogMessage("SymconHUE","$key");
-          print_r("Die Registrierung war erfolgreich. Der Benutzername muss aus dem Log in das entsprechende Feld kopiert werden!");
+          $user = $result[0]->success->username;
+          IPS_SetConfiguration($this->InstanceID, json_encode(array('User' => $user)));
+          IPS_ApplyChanges($this->InstanceID);
+          print_r("Die Registrierung war erfoglreich. Schließen Sie die Konfigurationsmaske, damit der Benutzername übernommen wird.");
           $this->SetStatus(102);
         } else {
           $this->SetStatus(202);
