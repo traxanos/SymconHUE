@@ -39,7 +39,11 @@ Die Einrichtung erfolgt über die Modulverwaltung von Symcon. Nach der Installat
 	// da direkt alle Lampen abgeglichen werden mit nur 1 Request zur HUE Bridge)
 	HUE_RequestData($lightId);
 
-	// Anpassung eines Lampenparameter
+	// Anpassung eines Lampenparameter (siehe SetValues)
+	HUE_SetValue($lightId, $key, $value);
+
+	// Anpassung mehrere Lampenparameter
+	// array('KEY1' => 'VALUE1', 'KEY2' => 'VALUE2'...)
 	//
 	// Mögliche Keys:
 	// STATE -> true oder false für an/aus
@@ -47,7 +51,10 @@ Die Einrichtung erfolgt über die Modulverwaltung von Symcon. Nach der Installat
 	// SATURATION -> Sättigung (0 bis 255)
 	// BRIGHTNESS -> Helligkeit in (0 bis 255)
 	// COLOR -> Farbe als integer
-	HUE_SetValue($lightId, $key, $value);
+	// ALERT -> Wird durchgereicht
+	// EFFECT -> Wird durchgereicht
+	// TRANSITIONTIME -> Wird durchgereicht
+	HUE_SetValues($lightId, $list);
 
 	// Liefert einen Lampenparameter (siehe HUE_SetValue)
 	HUE_GetValue($lightId, $key);
