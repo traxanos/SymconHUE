@@ -225,7 +225,18 @@ class HUELight extends IPSModule {
 
   /*
    * HUE_SetValue($lightId, $key, $value)
-   * Anpassung eines Lampenparameter
+   * Anpassung eines Lampenparameter siehe SetValues
+   */
+  public function SetValue($key, $value) {
+    $autoOn = false;
+    if (in_array($key,array('COLOR', 'BRIGHTNESS', 'SATURATION')))  $autoOn = true;
+    return $this->SetValues(array( $key => $value, 'STATE' => $autoOn ));
+  }
+
+  /*
+   * HUE_SetValues($lightId, $list)
+   * Anpassung mehrere Lampenparameter.
+   * array('KEY1' => 'VALUE1', 'KEY2' => 'VALUE2'...)
    *
    * Mögliche Keys:
    *
@@ -234,9 +245,12 @@ class HUELight extends IPSModule {
    * SATURATION -> Sättigung (0 bis 255)
    * BRIGHTNESS -> Helligkeit in (0 bis 255)
    * COLOR -> Farbe als integer
+   * ALERT -> Wird durchgereicht
+   * EFFECT -> Wird durchgereicht
+   * TRANSITIONTIME -> Wird durchgereicht
    *
    */
-  public function SetValue($key, $value) {
+  public function SetValues($list) {
     $stateId = IPS_GetObjectIDByIdent('STATE', $this->InstanceID);
     $cmId = IPS_GetObjectIDByIdent('COLOR_MODE', $this->InstanceID);
     $ctId = @IPS_GetObjectIDByIdent('COLOR_TEMPERATURE', $this->InstanceID);
@@ -253,77 +267,77 @@ class HUELight extends IPSModule {
     $hueValue = $hueId ? GetValueInteger($hueId) : 0;
     $colorValue = $colorId ? GetValueInteger($colorId) : 0;
 
-    switch ($key) {
-      case 'STATE':
-        $stateNewValue = $value;
-        break;
-      case 'EFFECT':
-        $effect = $value;
-        break;
-      case 'TRANSITIONTIME':
-        $transitiontime = $value;
-        break;
-      case 'ALERT':
-        $alert = $value;
-        break;
-      case 'COLOR':
-        $colorNewValue = $value;
-        $stateNewValue = true;
-        $hex = str_pad(dechex($value), 6, 0, STR_PAD_LEFT);
-        $hsv = $this->HEX2HSV($hex);
-        SetValueInteger($colorId, $value);
-        $hueNewValue = $hsv['h'];
-        $briNewValue = $hsv['v'];
-        $satNewValue = $hsv['s'];
-        $cmNewValue = 0;
-        break;
-      case 'BRIGHTNESS':
-        $briNewValue = $value;
-        $stateNewValue = true;
-        if (IPS_GetProperty($this->InstanceID, 'LightFeatures') != 3) {
-          if ($cmValue == '0') {
-            $newHex = $this->HSV2HEX($hueValue, $satValue, $briNewValue);
-            SetValueInteger($colorId, hexdec($newHex));
+    foreach ($list as $key => $value) {
+
+      switch ($key) {
+        case 'STATE':
+          $stateNewValue = $value;
+          break;
+        case 'EFFECT':
+          $effect = $value;
+          break;
+        case 'TRANSITIONTIME':
+          $transitiontime = $value;
+          break;
+        case 'ALERT':
+          $alert = $value;
+          break;
+        case 'COLOR':
+          $colorNewValue = $value;
+          $hex = str_pad(dechex($value), 6, 0, STR_PAD_LEFT);
+          $hsv = $this->HEX2HSV($hex);
+          SetValueInteger($colorId, $value);
+          $hueNewValue = $hsv['h'];
+          $briNewValue = $hsv['v'];
+          $satNewValue = $hsv['s'];
+          $cmNewValue = 0;
+          break;
+        case 'BRIGHTNESS':
+          $briNewValue = $value;
+          if (IPS_GetProperty($this->InstanceID, 'LightFeatures') != 3) {
+            if ($cmValue == '0') {
+              $newHex = $this->HSV2HEX($hueValue, $satValue, $briNewValue);
+              SetValueInteger($colorId, hexdec($newHex));
+              $hueNewValue = $hueValue;
+              $satNewValue = $satValue;
+            } else {
+              $ctNewValue = $ctValue;
+            }
+          }
+          break;
+        case 'SATURATION':
+          $cmNewValue = 0;
+          $satNewValue = $value;
+          $newHex = $this->HSV2HEX($hueValue, $satNewValue, $briValue);
+          SetValueInteger($colorId, hexdec($newHex));
+          $hueNewValue = $hueValue;
+          $briNewValue = $briValue;
+          break;
+        case 'COLOR_TEMPERATURE':
+          $cmNewValue = 1;
+          $ctNewValue = $value;
+          $briNewValue = $briValue;
+          break;
+        case 'COLOR_MODE':
+          $cmNewValue = $value;
+          $stateNewValue = true;
+          if ($cmNewValue == 1) {
+            $ctNewValue = $ctValue;
+            IPS_SetHidden($colorId, true);
+            IPS_SetHidden($ctId, false);
+            IPS_SetHidden($satId, true);
+          } else {
             $hueNewValue = $hueValue;
             $satNewValue = $satValue;
-          } else {
-            $ctNewValue = $ctValue;
+            $briNewValue = $briValue;
+            $newHex = $this->HSV2HEX($hueValue, $satValue, $briValue);
+            SetValueInteger($colorId, hexdec($newHex));
+            IPS_SetHidden($colorId, false);
+            IPS_SetHidden($ctId, true);
+            IPS_SetHidden($satId, false);
           }
-        }
-        break;
-      case 'SATURATION':
-        $cmNewValue = 0;
-        $satNewValue = $value;
-        $stateNewValue = true;
-        $newHex = $this->HSV2HEX($hueValue, $satNewValue, $briValue);
-        SetValueInteger($colorId, hexdec($newHex));
-        $hueNewValue = $hueValue;
-        $briNewValue = $briValue;
-        break;
-      case 'COLOR_TEMPERATURE':
-        $cmNewValue = 1;
-        $ctNewValue = $value;
-        $briNewValue = $briValue;
-        break;
-      case 'COLOR_MODE':
-        $cmNewValue = $value;
-        $stateNewValue = true;
-        if ($cmNewValue == 1) {
-          $ctNewValue = $ctValue;
-          IPS_SetHidden($colorId, true);
-          IPS_SetHidden($ctId, false);
-          IPS_SetHidden($satId, true);
-        } else {
-          $hueNewValue = $hueValue;
-          $satNewValue = $satValue;
-          $briNewValue = $briValue;
-          $newHex = $this->HSV2HEX($hueValue, $satValue, $briValue);
-          SetValueInteger($colorId, hexdec($newHex));
-          IPS_SetHidden($colorId, false);
-          IPS_SetHidden($ctId, true);
-          IPS_SetHidden($satId, false);
-        }
-        break;
+          break;
+      }
     }
 
     $changes = array();
