@@ -228,9 +228,9 @@ class HUELight extends IPSModule {
    * Anpassung eines Lampenparameter siehe SetValues
    */
   public function SetValue($key, $value) {
-    $autoOn = false;
-    if (in_array($key,array('COLOR', 'BRIGHTNESS', 'SATURATION')))  $autoOn = true;
-    return $this->SetValues(array( $key => $value, 'STATE' => $autoOn ));
+    $list = array($key => $value);
+    if (in_array($key,array('COLOR', 'BRIGHTNESS', 'SATURATION'))) $list['STATE'] = true;
+    return $this->SetValues($list);
   }
 
   /*
