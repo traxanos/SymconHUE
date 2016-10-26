@@ -91,7 +91,7 @@ class HUEBridge extends IPSModule {
     return $this->User;
   }
 
-  public function Request($path, $data = null) {
+  public function Request(string $path, array $data = null) {
     $host = $this->GetHost();
     $user = $this->GetUser();
 
@@ -240,7 +240,7 @@ class HUEBridge extends IPSModule {
    * HUE_GetDeviceByUniqueId($bridgeId, $uniqueId)
    * Liefert zu einer UniqueID die passende Lampeninstanz
    */
-  public function GetDeviceByUniqueId($uniqueId) {
+  public function GetDeviceByUniqueId(string $uniqueId) {
     $deviceIds = IPS_GetInstanceListByModuleID($this->DeviceGuid());
     foreach($deviceIds as $deviceId) {
       if(IPS_GetProperty($deviceId, 'UniqueId') == $uniqueId) {

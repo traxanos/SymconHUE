@@ -170,7 +170,9 @@ class HUELight extends IPSModule {
     } else {
       SetValueBoolean($stateId, $state['on']);
     }
+//    SetValueInteger($briId, round($state['bri'] / 254));
     SetValueInteger($briId, round($state['bri'] * 100 / 254));
+//    if (@$satId) SetValueInteger($satId, round($state['sat'] / 254));
     if (@$satId) SetValueInteger($satId, round($state['sat'] * 100 / 254));
     if (@$hueId) SetValueInteger($hueId, $state['hue']);
     if (@$ctId) SetValueInteger($ctId, 100 - round(( $state['ct'] - 153) * 100 / 347));
@@ -214,7 +216,7 @@ class HUELight extends IPSModule {
    * HUE_GetValue($lightId, $key)
    * Liefert einen Lampenparameter (siehe HUE_SetValue)
    */
-  public function GetValue($key) {
+  public function GetValue(string $key) {
     switch ($key) {
       default:
         $value = GetValue(@IPS_GetObjectIDByIdent($key, $this->InstanceID));
@@ -229,8 +231,51 @@ class HUELight extends IPSModule {
    */
   public function SetValue($key, $value) {
     $list = array($key => $value);
+    //if ($key == 'COLOR') $list['COLOR_MODE'] = 0;
     if (in_array($key,array('COLOR', 'BRIGHTNESS', 'SATURATION'))) $list['STATE'] = true;
     return $this->SetValues($list);
+  }
+
+  /*
+   * HUE_SetState(integer $lightId, boolean $value)
+   */
+  public function SetState(boolean $value) {
+    return $this->SetValues(array('STATE' => $value));
+  }
+
+  /*
+   * HUE_GetState(integer $lightId)
+   */
+  public function GetState() {
+    return $this->GetValue('STATE');
+  }
+
+  /*
+   * HUE_SetColor(integer $lightId, integer $value)
+   */
+  public function SetColor(integer $value) {
+    return $this->SetValues(array('STATE' => true, 'COLOR_MODE' => 0, 'COLOR' => $value));
+  }
+
+  /*
+   * HUE_GetColor(integer $lightId)
+   */
+  public function GetColor() {
+    return $this->GetValue('COLOR');
+  }
+
+  /*
+   * HUE_SetBrightness(integer $lightId, integer $value)
+   */
+  public function SetBrightness(integer $value) {
+    return $this->SetValues(array('STATE' => true, 'BRIGHTNESS' => $value));
+  }
+
+  /*
+   * HUE_GetBrightness(integer $lightId)
+   */
+  public function GetBrightness() {
+    return $this->GetValue('BRIGHTNESS');
   }
 
   /*
@@ -250,7 +295,7 @@ class HUELight extends IPSModule {
    * TRANSITIONTIME -> Wird durchgereicht
    *
    */
-  public function SetValues($list) {
+  public function SetValues(array $list) {
     $stateId = IPS_GetObjectIDByIdent('STATE', $this->InstanceID);
     $cmId = IPS_GetObjectIDByIdent('COLOR_MODE', $this->InstanceID);
     $ctId = @IPS_GetObjectIDByIdent('COLOR_TEMPERATURE', $this->InstanceID);
@@ -258,7 +303,6 @@ class HUELight extends IPSModule {
     $satId = @IPS_GetObjectIDByIdent('SATURATION', $this->InstanceID);
     $hueId = @IPS_GetObjectIDByIdent('HUE', $this->InstanceID);
     $colorId = @IPS_GetObjectIDByIdent('COLOR', $this->InstanceID);
-
     $stateValue = GetValueBoolean($stateId);
     $cmValue = $cmId ? GetValueInteger($cmId) : 0;
     $ctValue = $ctId ? (500 - round(347 * GetValueInteger($ctId) / 100)) : 0;
@@ -359,12 +403,16 @@ class HUELight extends IPSModule {
       $changes['hue'] = $hueNewValue;
     }
     if (isset($satNewValue)) {
+//      SetValueInteger($satId, $satNewValue);
       SetValueInteger($satId, round($satNewValue * 100 / 254));
       $changes['sat'] = $satNewValue;
+//      $changes['sat'] = $satNewValue * 254;
     }
     if (isset($briNewValue)) {
+//      SetValueInteger($briId, $briNewValue);
       SetValueInteger($briId, round($briNewValue * 100 / 254));
       $changes['bri'] = $briNewValue;
+//      $changes['bri'] = $briNewValue * 254;
     }
     if (isset($ctNewValue)) {
       SetValueInteger($ctId, 100 - round(($ctNewValue - 153) * 100 / 347));
