@@ -103,7 +103,7 @@ abstract class HUEDevice extends IPSModule {
     IPS_SetPosition($cmId, 2);
     IPS_SetIcon($cmId, 'ArrowRight');
 
-    $briId = $this->RegisterVariableInteger("BRIGHTNESS", "Helligkeit", "Intensity.254");
+    $briId = $this->RegisterVariableInteger("BRIGHTNESS", "Helligkeit", "~Intensity.255");
     $this->EnableAction("BRIGHTNESS");
     IPS_SetIcon($briId, 'Sun');
     IPS_SetPosition($briId, 5);
@@ -124,7 +124,7 @@ abstract class HUEDevice extends IPSModule {
     }
 
     if (get_class($this) == 'HUEGroup' || $lightFeature == 0 || $lightFeature == 2) {
-      $ctId = $this->RegisterVariableInteger("COLOR_TEMPERATURE", "Farbtemperatur", "~Intensity.100");
+      $ctId = $this->RegisterVariableInteger("COLOR_TEMPERATURE", "Farbtemperatur", "~Intensity.255");
       $this->EnableAction("COLOR_TEMPERATURE");
       IPS_SetIcon($ctId, 'Bulb');
       IPS_SetPosition($ctId, 4);
@@ -139,7 +139,7 @@ abstract class HUEDevice extends IPSModule {
       IPS_SetPosition($colorId, 3);
       IPS_SetIcon($colorId, 'Bulb');
 
-      $satId = $this->RegisterVariableInteger("SATURATION", utf8_decode("Sättigung"), "Intensity.254");
+      $satId = $this->RegisterVariableInteger("SATURATION", utf8_decode("Sättigung"), "~Intensity.255");
       $this->EnableAction("SATURATION");
       IPS_SetIcon($satId, 'Intensity');
       IPS_SetPosition($satId, 6);
@@ -160,12 +160,10 @@ abstract class HUEDevice extends IPSModule {
     } else {
       SetValueBoolean($valuesId, $values['on']);
     }
-//    SetValueInteger($briId, round($values['bri'] / 254));
     SetValueInteger($briId, $values['bri']);
-//    if (@$satId) SetValueInteger($satId, round($values['sat'] / 254));
     if (@$satId) SetValueInteger($satId, $values['sat']);
     if (@$hueId) SetValueInteger($hueId, $values['hue']);
-    if (@$ctId) SetValueInteger($ctId, 100 - round(( $values['ct'] - 153) * 100 / 347));
+    if (@$ctId) SetValueInteger($ctId, 255 - ($values['ct'] - 153) * 255 / 347);
 
     switch (@$values['colormode']) {
       case 'xy':
@@ -208,7 +206,7 @@ abstract class HUEDevice extends IPSModule {
          $value = $value == 1;
          break;
       case 'COLOR_TEMPERATURE':
-        $value = 500 - round(347 * $value / 100);
+        $value = 500 - round(347 * $value / 255);
         break;
       case 'SATURATION':
       case 'BRIGHTNESS':
@@ -310,7 +308,7 @@ abstract class HUEDevice extends IPSModule {
     $colorId = @IPS_GetObjectIDByIdent('COLOR', $this->InstanceID);
     $stateValue = GetValueBoolean($stateId);
     $cmValue = $cmId ? GetValueInteger($cmId) : 0;
-    $ctValue = $ctId ? (500 - round(347 * GetValueInteger($ctId) / 100)) : 0;
+    $ctValue = $ctId ? (500 - round(347 * GetValueInteger($ctId) / 255)) : 0;
     $briValue = GetValueInteger($briId);
     $satValue = $satId ? GetValueInteger($satId) : 0;
     $hueValue = $hueId ? GetValueInteger($hueId) : 0;
@@ -409,19 +407,15 @@ abstract class HUEDevice extends IPSModule {
     }
     if (isset($satNewValue)) {
       SetValueInteger($satId, $satNewValue);
-//      SetValueInteger($satId, round($satNewValue * 100 / 254));
       $changes['sat'] = $satNewValue;
-//      $changes['sat'] = $satNewValue * 254;
     }
     if (isset($briNewValue)) {
       SetValueInteger($briId, $briNewValue);
-//      SetValueInteger($briId, round($briNewValue * 100 / 254));
       $changes['bri'] = $briNewValue;
-//      $changes['bri'] = $briNewValue * 254;
     }
     if (isset($ctNewValue)) {
-      SetValueInteger($ctId, 100 - round(($ctNewValue - 153) * 100 / 347));
-      $changes['ct'] = $ctNewValue;
+      SetValueInteger($ctId, $ctNewValue);
+      $changes['ct'] = (500 - (347 * $ctNewValue / 255));
     }
     if (isset($cmNewValue)) {
       SetValueInteger($cmId, $cmNewValue);
@@ -434,7 +428,7 @@ abstract class HUEDevice extends IPSModule {
       $path = $this->BasePath() . "/state";
     }
 
-//print_r($changes);
+    //print_r($changes);
     return HUE_Request($this->GetBridge(), $path, $changes);
   }
 
@@ -463,9 +457,9 @@ abstract class HUEDevice extends IPSModule {
     $maxRGB = max($r, $g, $b);
     $minRGB = min($r, $g, $b);
     $chroma = $maxRGB - $minRGB;
-    $v = $maxRGB * 254;
+    $v = $maxRGB * 255;
     if ($chroma == 0) return array('h' => 0, 's' => 0, 'v' => $v);
-    $s = ($chroma / $maxRGB) * 254;
+    $s = ($chroma / $maxRGB) * 255;
     if ($r == $minRGB) {
       $h = 3 - (($g - $b) / $chroma);
     } elseif ($b == $minRGB) {
@@ -479,11 +473,11 @@ abstract class HUEDevice extends IPSModule {
 
   protected function HSV2RGB($h, $s, $v) {
     if (!($h >= 0 && $h <= (21845*3))) throw new Exception("h property must be between 0 and 65535, but is: ${h}");
-    if (!($s >= 0 && $s <= 254)) throw new Exception("s property must be between 0 and 254, but is: ${s}");
-    if (!($v >= 0 && $v <= 254)) throw new Exception("v property must be between 0 and 254, but is: ${v}");
+    if (!($s >= 0 && $s <= 255)) throw new Exception("s property must be between 0 and 254, but is: ${s}");
+    if (!($v >= 0 && $v <= 255)) throw new Exception("v property must be between 0 and 254, but is: ${v}");
     $h = $h * 6 / (21845*3);
-    $s = $s / 254;
-    $v = $v / 254;
+    $s = $s / 255;
+    $v = $v / 255;
     $i = floor($h);
     $f = $h - $i;
     $m = $v * (1 - $s);
