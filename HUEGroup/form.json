@@ -1,0 +1,24 @@
+{
+  "elements": [
+    {
+      "type": "NumberSpinner",
+      "name": "GroupId",
+      "caption": "Gruppe"
+    }
+  ],
+  "actions": [
+    {
+      "type": "Button",
+      "label": "Status neu einlesen",
+      "onClick": "HUEGroup_RequestData($id);"
+    }
+  ],
+  "status": [
+    { "code": 101, "icon": "active", "caption": "Gruppe wird erstellt." },
+    { "code": 102, "icon": "active", "caption": "Gruppe ist aktiv." },
+    { "code": 103, "icon": "active", "caption": "Gruppe wird gelöscht." },
+    { "code": 104, "icon": "inactive", "caption": "Bitte die Gruppe über die Bridge anlegen lassen." },
+    { "code": 201, "icon": "error", "caption": "Die Gruppe ist nicht erreichbar." },
+    { "code": 202, "icon": "error", "caption": "Es ist ein unbekannter Fehler aufgetreten." }
+  ]
+}

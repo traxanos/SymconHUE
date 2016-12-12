@@ -5,12 +5,14 @@ class HUEBridge extends IPSModule {
   private $Host = "";
   private $User = "";
   private $LightsCategory = 0;
+  private $GroupsCategory = 0;
 
   public function Create() {
     parent::Create();
     $this->RegisterPropertyString("Host", "");
     $this->RegisterPropertyString("User", "");
     $this->RegisterPropertyInteger("LightsCategory", 0);
+    $this->RegisterPropertyInteger("GroupsCategory", 0);
     $this->RegisterPropertyInteger("UpdateInterval", 5);
   }
 
@@ -79,6 +81,11 @@ class HUEBridge extends IPSModule {
     return $this->LightsCategory;
   }
 
+  private function GetGroupsCategory() {
+    if($this->GroupsCategory == '') $this->GroupsCategory = $this->ReadPropertyString('GroupsCategory');
+    return $this->GroupsCategory;
+  }
+
   private function GetHost() {
     if($this->Host == '') $this->Host = $this->ReadPropertyString('Host');
     return $this->Host;
@@ -124,6 +131,7 @@ class HUEBridge extends IPSModule {
         if (count($result) > 0) {
           foreach ($result as $item) {
             if (@$item->error) {
+              IPS_LogMessage("HUE_Bridge", print_r(@$item->error, 1));
               $this->SetStatus(299);
               return false;
             }
@@ -184,18 +192,19 @@ class HUEBridge extends IPSModule {
    */
   public function SyncDevices() {
     $lightsCategoryId = $this->GetLightsCategory();
+    $groupsCategoryId = $this->GetGroupsCategory();
     if(@$lightsCategoryId > 0) {
       $lights = $this->Request('/lights');
       if ($lights) {
         foreach ($lights as $lightId => $light) {
           $name = utf8_decode((string)$light->name);
           $uniqueId = (string)$light->uniqueid;
-          echo "$lightId. $name ($uniqueId)\n";
+          echo "Lampe \"$name\" ($lightId - $uniqueId)\n";
 
           $deviceId = $this->GetDeviceByUniqueId($uniqueId);
 
           if ($deviceId == 0) {
-            $deviceId = IPS_CreateInstance($this->DeviceGuid());
+            $deviceId = IPS_CreateInstance($this->LightGuid());
             IPS_SetProperty($deviceId, 'UniqueId', $uniqueId);
           }
 
@@ -213,12 +222,43 @@ class HUEBridge extends IPSModule {
           HUE_RequestData($deviceId);
         }
       }
-      return true;
     } else {
       echo 'Lampen konnten nicht syncronisiert werden, da die Lampenkategorie nicht zugewiesen wurde.';
       IPS_LogMessage('SymconHUE', 'Lampen konnten nicht syncronisiert werden, da die Lampenkategorie nicht zugewiesen wurde.');
-      return false;
     }
+    if(@$groupsCategoryId > 0) {
+      $groups = $this->Request('/groups');
+      if ($groups) {
+        foreach ($groups as $groupId => $group) {
+          $name = utf8_decode((string)$group->name);
+          echo "Gruppe \"$name\" ($groupId)\n";
+
+          $deviceId = $this->GetDeviceByGroupId($groupId);
+          echo $deviceId;
+
+          if ($deviceId == 0) {
+            $deviceId = IPS_CreateInstance($this->GroupGuid());
+            IPS_SetProperty($deviceId, 'GroupId', (integer)$groupId);
+          }
+
+          IPS_SetParent($deviceId, $groupsCategoryId);
+          IPS_SetName($deviceId, $name);
+
+          // Verbinde Light mit Bridge
+          if (IPS_GetInstance($deviceId)['ConnectionID'] <> $this->InstanceID) {
+            @IPS_DisconnectInstance($deviceId);
+            IPS_ConnectInstance($deviceId, $this->InstanceID);
+          }
+
+          IPS_ApplyChanges($deviceId);
+          HUEGroup_RequestData($deviceId);
+        }
+      }
+    } else {
+      echo 'Gruppen konnten nicht syncronisiert werden, da die Gruppenkategorie nicht zugewiesen wurde.';
+      IPS_LogMessage('SymconHUE', 'Gruppe konnten nicht syncronisiert werden, da die Gruppenkategorie nicht zugewiesen wurde.');
+    }
+    return true;
   }
 
   /*
@@ -241,7 +281,7 @@ class HUEBridge extends IPSModule {
    * Liefert zu einer UniqueID die passende Lampeninstanz
    */
   public function GetDeviceByUniqueId(string $uniqueId) {
-    $deviceIds = IPS_GetInstanceListByModuleID($this->DeviceGuid());
+    $deviceIds = IPS_GetInstanceListByModuleID($this->LightGuid());
     foreach($deviceIds as $deviceId) {
       if(IPS_GetProperty($deviceId, 'UniqueId') == $uniqueId) {
         return $deviceId;
@@ -249,8 +289,21 @@ class HUEBridge extends IPSModule {
     }
   }
 
-  private function DeviceGuid() {
+  public function GetDeviceByGroupId(integer $groupId) {
+    $deviceIds = IPS_GetInstanceListByModuleID($this->GroupGuid());
+    foreach($deviceIds as $deviceId) {
+      if(IPS_GetProperty($deviceId, 'GroupId') == $groupId) {
+        return $deviceId;
+      }
+    }
+  }
+
+  private function LightGuid() {
     return '{729BE8EB-6624-4C6B-B9E5-6E09482A3E36}';
+  }
+
+  private function GroupGuid() {
+    return '{C47C8889-02C4-40A2-B18A-DBD9E47CE23D}';
   }
 
 }

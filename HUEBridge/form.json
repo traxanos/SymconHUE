@@ -4,9 +4,10 @@
     { "name": "User", "type": "ValidationTextBox", "caption": "User" },
     { "name": "UpdateInterval", "type": "IntervalBox", "caption": "Sekunden" },
     { "name": "LightsCategory", "type": "SelectCategory", "caption": "Lampenkategorie" },
+    { "name": "GroupsCategory", "type": "SelectCategory", "caption": "Gruppenkategorie" },
   ],
   "actions": [
-    { "type": "Button", "label": "Lampen abgleichen", "onClick": "HUE_SyncDevices($id);" },
+    { "type": "Button", "label": "Geräte abgleichen", "onClick": "HUE_SyncDevices($id);" },
     { "type": "Button", "label": "User registrieren", "onClick": "HUE_RegisterUser($id);" },
     { "type": "Button", "label": "Status abgleichen", "onClick": "HUE_SyncStates($id); echo 'Fertig';" }
   ],
