@@ -19,7 +19,8 @@
         { "value": 0, "label": "Farbe + Temperatur" },
         { "value": 1, "label": "Farbe" },
         { "value": 2, "label": "Temperatur" },
-        { "value": 3, "label": "Helligkeit" }
+        { "value": 3, "label": "Helligkeit" },
+        { "value": 4, "label": "Keine" }
       ]
     }, {
       "type": "ValidationTextBox",

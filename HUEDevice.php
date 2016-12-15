@@ -70,8 +70,8 @@ abstract class HUEDevice extends IPSModule {
     }
 
     // Setze den Modus
-    if (get_class($this) == 'HUEGroup' && count($data['lights']) == 0) {
-      // Empty
+    if (!isset($values['bri'])) {
+      // Keine Helligkeit, somit keine Licht-Funktionen
       $lightFeature = 4;
     } elseif (isset($values['ct']) && isset($values['hue'])) {
       // HUE+CT Lamp
