@@ -4,7 +4,7 @@ SymconHUE ist eine Erweiterung für die Heimautomatisierung IP Symcon. Diese Erw
 
 ## Einrichtung
 
-Die Einrichtung erfolgt über die Modulverwaltung von Symcon. Nach der Installation des Moduls sollte der Dienst neugestartet werden. Jetzt kann eine neue Instanz vom Typ "_Philips Hue Bridge_" angelegt und konfiguriert werden. In der Konfigurationsmaske könnt ihr auch den _User_ direkt anlernen. Dazu drückt ihr **zuerst** den Knopf auf der HUE Bridge und dann den Knopf "User registieren" betätigen. Nach dem drücken des "Lampen abgleichen"-Schalters, wird für jede Lampe eine Instanz in der angegebenen Lampenkategorie angelegt. Ihr müsst somit **nicht** selber für jede Lampe eine Instanz anlegen.
+Die Einrichtung erfolgt über die Modulverwaltung von Symcon. Nach der Installation des Moduls sollte der Dienst neugestartet werden. Jetzt kann eine neue Instanz vom Typ "_Philips Hue Bridge_" angelegt und konfiguriert werden. In der Konfigurationsmaske könnt ihr auch den _User_ direkt anlernen. Dazu drückt ihr **zuerst** den Knopf auf der HUE Bridge und dann den Knopf "User registieren" betätigen. Nach dem drücken des "Gräte abgleichen"-Schalters, wird für jede Lampe eine Instanz in der angegebenen Lampenkategorie bzw. jede Gruppe in der angegebenen Gruppenkategorie angelegt. Ihr müsst somit **nicht** selber für jede Lampe bzw. Gruppe eine Instanz anlegen.
 
 ## Einstellungen
 
@@ -12,6 +12,7 @@ Die Einrichtung erfolgt über die Modulverwaltung von Symcon. Nach der Installat
 * **User**  _Ein Benutzerschlüssel (wird per MD5 umgewandelt, wenn es keine MD5-Key ist_
 * **Interval**  _In welchem Abstand soll der Status abgeglichen werden_
 * **Lampenkategorie**  _In der ausgewählten Kategorie werden die Lampeninstanzen bereit gestellt_
+* **Gruppenkategorie**  _In der ausgewählten Kategorie werden die Gruppeninstanzen bereit gestellt_
 
 **Schalter**
 
@@ -41,13 +42,14 @@ Die Einrichtung erfolgt über die Modulverwaltung von Symcon. Nach der Installat
 
 	// Anpassung eines Lampenparameter (siehe SetValues)
 	HUE_SetValue($lightId, $key, $value);
+	HUEGroup_SetValue($groupId, $key, $value);
 
 	// Anpassung mehrere Lampenparameter
 	// array('KEY1' => 'VALUE1', 'KEY2' => 'VALUE2'...)
 	//
 	// Mögliche Keys:
 	// STATE -> true oder false für an/aus
-	// COLOR_TEMPERATURE -> Farbtemperatur (153 bis 500)
+	// COLOR_TEMPERATURE -> Farbtemperatur (0 bis 255)
 	// SATURATION -> Sättigung (0 bis 255)
 	// BRIGHTNESS -> Helligkeit in (0 bis 255)
 	// COLOR -> Farbe als integer
@@ -55,6 +57,8 @@ Die Einrichtung erfolgt über die Modulverwaltung von Symcon. Nach der Installat
 	// EFFECT -> Wird durchgereicht
 	// TRANSITIONTIME -> Wird durchgereicht
 	HUE_SetValues($lightId, $list);
+	HUEGroup_SetValues($groupId, $list);
 
 	// Liefert einen Lampenparameter (siehe HUE_SetValue)
 	HUE_GetValue($lightId, $key);
+	HUEGroup_GetValue($groupId, $key);
