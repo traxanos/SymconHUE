@@ -62,3 +62,17 @@ Die Einrichtung erfolgt über die Modulverwaltung von Symcon. Nach der Installat
 	// Liefert einen Lampenparameter (siehe HUE_SetValue)
 	HUE_GetValue($lightId, $key);
 	HUEGroup_GetValue($groupId, $key);
+	
+	// Weitere Helpergunktionen für Direktverknüpfungen
+	HUE_SetState($lightId, $value)
+	HUE_GetState($lightId)
+	HUE_SetColor($lightId, $value)
+	HUE_GetColor($lightId)
+	HUE_SetBrightness($lightId, $value)
+	HUE_GetBrightness($lightId)
+	HUEGroup_SetState($groupId, $value)
+	HUEGroup_GetState($groupId)
+	HUEGroup_SetColor($groupId, $value)
+	HUEGroup_GetColor($groupId)
+	HUEGroup_SetBrightness($groupId, $value)
+	HUEGroup_GetBrightness($groupId)
