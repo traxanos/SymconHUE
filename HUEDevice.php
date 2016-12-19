@@ -23,6 +23,17 @@ abstract class HUEDevice extends IPSModule {
   }
 
   public function ApplyData($data) {
+    // Temp - later move to create
+    if (!IPS_VariableProfileExists('ColorModeSelect.Hue')) IPS_CreateVariableProfile('ColorModeSelect.Hue', 1);
+    IPS_SetVariableProfileAssociation('ColorModeSelect.Hue', 0, 'Farbe', '', 0x000000);
+    IPS_SetVariableProfileAssociation('ColorModeSelect.Hue', 1, 'Farbtemperatur', '', 0x000000);
+
+    if (!IPS_VariableProfileExists('ColorTemperatureSelect.Hue')) IPS_CreateVariableProfile('ColorTemperatureSelect.Hue', 1);
+    IPS_SetVariableProfileDigits('ColorTemperatureSelect.Hue', 0);
+    IPS_SetVariableProfileIcon('ColorTemperatureSelect.Hue', 'Intensity');
+    IPS_SetVariableProfileText('ColorTemperatureSelect.Hue', '', ' Mired');
+    IPS_SetVariableProfileValues('ColorTemperatureSelect.Hue', 153, 500, 1);
+
     $data = (array)$data;
     if(get_class($this) == 'HUEGroup') {
       $values = (array)@$data['action'];
@@ -133,7 +144,7 @@ abstract class HUEDevice extends IPSModule {
     }
 
     if ($lightFeature == 0 || $lightFeature == 2) {
-      $ctId = $this->RegisterVariableInteger("COLOR_TEMPERATURE", "Farbtemperatur", "~Intensity.255");
+      $ctId = $this->RegisterVariableInteger("COLOR_TEMPERATURE", "Farbtemperatur", "ColorTemperatureSelect.Hue");
       $this->EnableAction("COLOR_TEMPERATURE");
       IPS_SetIcon($ctId, 'Bulb');
       IPS_SetPosition($ctId, 4);
@@ -171,7 +182,7 @@ abstract class HUEDevice extends IPSModule {
     if (@$briId) SetValueInteger($briId, $values['bri']);
     if (@$satId) SetValueInteger($satId, $values['sat']);
     if (@$hueId) SetValueInteger($hueId, $values['hue']);
-    if (@$ctId) SetValueInteger($ctId, 255 - ($values['ct'] - 153) * 255 / 347);
+    if (@$ctId) SetValueInteger($ctId, $values['ct']);
 
     switch (@$values['colormode']) {
       case 'xy':
@@ -297,7 +308,7 @@ abstract class HUEDevice extends IPSModule {
    * Mögliche Keys:
    *
    * STATE -> true oder false für an/aus
-   * COLOR_TEMPERATURE -> Farbtemperatur (153 bis 500)
+   * COLOR_TEMPERATURE -> Farbtemperatur in mirek (500 bis 153)
    * SATURATION -> Sättigung (0 bis 255)
    * BRIGHTNESS -> Helligkeit in (0 bis 255)
    * COLOR -> Farbe als integer
@@ -423,7 +434,7 @@ abstract class HUEDevice extends IPSModule {
     }
     if (isset($ctNewValue)) {
       SetValueInteger($ctId, $ctNewValue);
-      $changes['ct'] = round(500 - (347 * $ctNewValue / 255));
+      $changes['ct'] = $ctNewValue;
     }
     if (isset($cmNewValue)) {
       SetValueInteger($cmId, $cmNewValue);
