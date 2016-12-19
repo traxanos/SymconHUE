@@ -308,7 +308,7 @@ abstract class HUEDevice extends IPSModule {
    * Mögliche Keys:
    *
    * STATE -> true oder false für an/aus
-   * COLOR_TEMPERATURE -> Farbtemperatur in mirek (500 bis 153)
+   * COLOR_TEMPERATURE -> Farbtemperatur in mirek (153 bis 500)
    * SATURATION -> Sättigung (0 bis 255)
    * BRIGHTNESS -> Helligkeit in (0 bis 255)
    * COLOR -> Farbe als integer
