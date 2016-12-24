@@ -274,6 +274,13 @@ class HUEBridge extends IPSModule {
         if($deviceId > 0) HUE_ApplyData($deviceId, $light);
       }
     }
+    $groups = $this->Request('/groups');
+    if ($groups) {
+      foreach ($groups as $groupId => $group) {
+        $deviceId = $this->GetDeviceByGroupId($groupId);
+        if($deviceId > 0) HUEGroup_ApplyData($deviceId, $group);
+      }
+    }
   }
 
   /*
