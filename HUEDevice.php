@@ -7,6 +7,16 @@ abstract class HUEDevice extends IPSModule {
   }
 
   public function Create() {
+    if (!IPS_VariableProfileExists('ColorModeSelect.Hue')) IPS_CreateVariableProfile('ColorModeSelect.Hue', 1);
+    IPS_SetVariableProfileAssociation('ColorModeSelect.Hue', 0, 'Farbe', '', 0x000000);
+    IPS_SetVariableProfileAssociation('ColorModeSelect.Hue', 1, 'Farbtemperatur', '', 0x000000);
+
+    if (!IPS_VariableProfileExists('ColorTemperatureSelect.Hue')) IPS_CreateVariableProfile('ColorTemperatureSelect.Hue', 1);
+    IPS_SetVariableProfileDigits('ColorTemperatureSelect.Hue', 0);
+    IPS_SetVariableProfileIcon('ColorTemperatureSelect.Hue', 'Intensity');
+    IPS_SetVariableProfileText('ColorTemperatureSelect.Hue', '', ' Mired');
+    IPS_SetVariableProfileValues('ColorTemperatureSelect.Hue', 153, 500, 1);
+
     parent::Create();
   }
 
@@ -23,17 +33,6 @@ abstract class HUEDevice extends IPSModule {
   }
 
   public function ApplyData($data) {
-    // Temp - later move to create
-    if (!IPS_VariableProfileExists('ColorModeSelect.Hue')) IPS_CreateVariableProfile('ColorModeSelect.Hue', 1);
-    IPS_SetVariableProfileAssociation('ColorModeSelect.Hue', 0, 'Farbe', '', 0x000000);
-    IPS_SetVariableProfileAssociation('ColorModeSelect.Hue', 1, 'Farbtemperatur', '', 0x000000);
-
-    if (!IPS_VariableProfileExists('ColorTemperatureSelect.Hue')) IPS_CreateVariableProfile('ColorTemperatureSelect.Hue', 1);
-    IPS_SetVariableProfileDigits('ColorTemperatureSelect.Hue', 0);
-    IPS_SetVariableProfileIcon('ColorTemperatureSelect.Hue', 'Intensity');
-    IPS_SetVariableProfileText('ColorTemperatureSelect.Hue', '', ' Mired');
-    IPS_SetVariableProfileValues('ColorTemperatureSelect.Hue', 153, 500, 1);
-
     $data = (array)$data;
     if(get_class($this) == 'HUEGroup') {
       $values = (array)@$data['action'];
@@ -109,28 +108,36 @@ abstract class HUEDevice extends IPSModule {
      * Variables
      */
 
-    $valuesId = $this->RegisterVariableBoolean("STATE", "Zustand", "~Switch");
-    $this->EnableAction("STATE");
-    IPS_SetPosition($valuesId, 1);
+    if (!$valuesId = @$this->GetIDForIdent("STATE")) {
+      $valuesId = $this->RegisterVariableBoolean("STATE", "Zustand", "~Switch", 1);
+      $this->EnableAction("STATE");
+      //IPS_SetPosition($valuesId, 1);
+    }
 
-    $cmId = $this->RegisterVariableInteger("COLOR_MODE", "Modus", "ColorModeSelect.Hue");
-    $this->EnableAction("COLOR_MODE");
-    IPS_SetPosition($cmId, 2);
-    IPS_SetIcon($cmId, 'ArrowRight');
+    if (!$cmId = @$this->GetIDForIdent("COLOR_MODE")) {
+      $cmId = $this->RegisterVariableInteger("COLOR_MODE", "Modus", "ColorModeSelect.Hue", 2);
+      $this->EnableAction("COLOR_MODE");
+      //IPS_SetPosition($cmId, 2);
+      IPS_SetIcon($cmId, 'ArrowRight');
+   }
 
     if ($lightFeature != 4) {
-      $briId = $this->RegisterVariableInteger("BRIGHTNESS", "Helligkeit", "~Intensity.255");
-      $this->EnableAction("BRIGHTNESS");
-      IPS_SetIcon($briId, 'Sun');
-      IPS_SetPosition($briId, 5);
+      if (!$briId = @$this->GetIDForIdent("BRIGHTNESS")) {
+        $briId = $this->RegisterVariableInteger("BRIGHTNESS", "Helligkeit", "~Intensity.255", 5);
+        $this->EnableAction("BRIGHTNESS");
+        IPS_SetIcon($briId, 'Sun');
+        //IPS_SetPosition($briId, 5);
+      }
     } else {
       $delete = @IPS_GetObjectIDByIdent("BRIGHTNESS", $this->InstanceID);
       if ($delete !== false) IPS_DeleteVariable($delete);
     }
 
     if ($lightFeature == 0 || $lightFeature == 1) {
-      $hueId = $this->RegisterVariableInteger("HUE", "Hue");
-      IPS_SetHidden($hueId, true);
+      if (!$hueId = @$this->GetIDForIdent("HUE")) {
+        $hueId = $this->RegisterVariableInteger("HUE", "Hue");
+        IPS_SetHidden($hueId, true);
+      }
     } else {
       $delete = @IPS_GetObjectIDByIdent("HUE", $this->InstanceID);
       if ($delete !== false) IPS_DeleteVariable($delete);
@@ -144,25 +151,31 @@ abstract class HUEDevice extends IPSModule {
     }
 
     if ($lightFeature == 0 || $lightFeature == 2) {
-      $ctId = $this->RegisterVariableInteger("COLOR_TEMPERATURE", "Farbtemperatur", "ColorTemperatureSelect.Hue");
-      $this->EnableAction("COLOR_TEMPERATURE");
-      IPS_SetIcon($ctId, 'Bulb');
-      IPS_SetPosition($ctId, 4);
+      if (!$ctId = @$this->GetIDForIdent("COLOR_TEMPERATURE")) {
+        $ctId = $this->RegisterVariableInteger("COLOR_TEMPERATURE", "Farbtemperatur", "ColorTemperatureSelect.Hue", 4);
+        $this->EnableAction("COLOR_TEMPERATURE");
+        IPS_SetIcon($ctId, 'Bulb');
+        //IPS_SetPosition($ctId, 4);
+      }
     } else {
       $delete = @IPS_GetObjectIDByIdent("COLOR_TEMPERATURE", $this->InstanceID);
       if ($delete !== false) IPS_DeleteVariable($delete);
     }
 
     if ($lightFeature == 0 || $lightFeature == 1) {
-      $colorId = $this->RegisterVariableInteger("COLOR", "Farbe", "~HexColor");
-      $this->EnableAction("COLOR");
-      IPS_SetPosition($colorId, 3);
-      IPS_SetIcon($colorId, 'Bulb');
+      if (!$colorId = @$this->GetIDForIdent("COLOR")) {
+        $colorId = $this->RegisterVariableInteger("COLOR", "Farbe", "~HexColor", 3);
+        $this->EnableAction("COLOR");
+        //IPS_SetPosition($colorId, 3);
+        IPS_SetIcon($colorId, 'Bulb');
+      }
 
-      $satId = $this->RegisterVariableInteger("SATURATION", utf8_decode("Sättigung"), "~Intensity.255");
-      $this->EnableAction("SATURATION");
-      IPS_SetIcon($satId, 'Intensity');
-      IPS_SetPosition($satId, 6);
+      if (!$satId = @$this->GetIDForIdent("SATURATION")) {
+        $satId = $this->RegisterVariableInteger("SATURATION", utf8_decode("Sättigung"), "~Intensity.255", 6);
+        $this->EnableAction("SATURATION");
+        IPS_SetIcon($satId, 'Intensity');
+        //IPS_SetPosition($satId, 6);
+      }
     } else {
       $delete = @IPS_GetObjectIDByIdent("COLOR", $this->InstanceID);
       if ($delete !== false) IPS_DeleteVariable($delete);
