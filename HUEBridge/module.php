@@ -77,12 +77,12 @@ class HUEBridge extends IPSModule {
   }
 
   private function GetLightsCategory() {
-    if($this->LightsCategory == '') $this->LightsCategory = $this->ReadPropertyString('LightsCategory');
+    if($this->LightsCategory == '') $this->LightsCategory = $this->RegisterPropertyInteger('LightsCategory');
     return $this->LightsCategory;
   }
 
   private function GetGroupsCategory() {
-    if($this->GroupsCategory == '') $this->GroupsCategory = $this->ReadPropertyString('GroupsCategory');
+    if($this->GroupsCategory == '') $this->GroupsCategory = $this->RegisterPropertyInteger('GroupsCategory');
     return $this->GroupsCategory;
   }
 
