@@ -23,7 +23,7 @@ class HUEBridge extends IPSModule {
 
     parent::ApplyChanges();
 
-    $this->RegisterTimer('UPDATE', $this->ReadPropertyString('UpdateInterval'), 'HUE_SyncStates($id)');
+    $this->RegisterTimer('UPDATE', $this->RegisterPropertyInteger('UpdateInterval'), 'HUE_SyncStates($id)');
 
     $this->ValidateConfiguration();
   }
