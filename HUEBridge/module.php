@@ -227,22 +227,25 @@ class HUEBridge extends IPSModule {
       IPS_LogMessage('SymconHUE', 'Lampen konnten nicht syncronisiert werden, da die Lampenkategorie nicht zugewiesen wurde.');
     }
     if(@$groupsCategoryId > 0) {
-      $groups = $this->Request('/groups');
+      $groups = (array)$this->Request('/groups');
+      $group_zero = $this->Request('/groups/0');
+      $group_zero->name = "All";
+      $groups[0] = $group_zero;
       if ($groups) {
         foreach ($groups as $groupId => $group) {
           $name = utf8_decode((string)$group->name);
           echo "Gruppe \"$name\" ($groupId)\n";
 
           $deviceId = $this->GetDeviceByGroupId($groupId);
-          echo $deviceId;
-
           if ($deviceId == 0) {
             $deviceId = IPS_CreateInstance($this->GroupGuid());
             IPS_SetProperty($deviceId, 'GroupId', (integer)$groupId);
+            IPS_SetName($deviceId, $name);
+          } elseif ($groupId != 0) {
+            IPS_SetName($deviceId, $name);
           }
 
           IPS_SetParent($deviceId, $groupsCategoryId);
-          IPS_SetName($deviceId, $name);
 
           // Verbinde Light mit Bridge
           if (IPS_GetInstance($deviceId)['ConnectionID'] <> $this->InstanceID) {

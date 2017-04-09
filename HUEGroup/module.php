@@ -16,6 +16,7 @@ class HUEGroup extends HUEDevice {
 
   protected function BasePath() {
     $id = $this->ReadPropertyInteger("GroupId");
+    if($id == -1) $id = 0; // special for group zero
     return "/groups/$id";
   }
 

@@ -44,9 +44,9 @@ abstract class HUEDevice extends IPSModule {
     if (get_class($this) == 'HUELight' && $this->ReadPropertyString("UniqueId") == '') {
       $this->SetStatus(104);
       return false;
-    } elseif (get_class($this) == 'HUEGroup' && $this->ReadPropertyInteger("GroupId") == 0) {
-      $this->SetStatus(104);
-      return false;
+    //} elseif (get_class($this) == 'HUEGroup' && $this->ReadPropertyInteger("GroupId") == 0) {
+    //  $this->SetStatus(104);
+    //  return false;
     } elseif (get_class($this) == 'HUEGroup' || $values['reachable']) {
       $this->SetStatus(102);
     } else {
@@ -60,7 +60,8 @@ abstract class HUEDevice extends IPSModule {
      */
 
     $name = utf8_decode((string)$data['name']);
-    if (IPS_GetName($this->InstanceID) != $name) {
+    // update name if not the special group all with id -1
+    if (IPS_GetName($this->InstanceID) != $name && !(get_class($this) == 'HUEGroup' && $this->ReadPropertyInteger("GroupId") == 0)) {
       IPS_SetName($this->InstanceID, $name);
       $dirty = true;
     }
