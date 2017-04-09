@@ -44,7 +44,7 @@ abstract class HUEDevice extends IPSModule {
     if (get_class($this) == 'HUELight' && $this->ReadPropertyString("UniqueId") == '') {
       $this->SetStatus(104);
       return false;
-    } elseif (get_class($this) == 'HUEGroup' && $this->ReadPropertyString("GroupId") == 0) {
+    } elseif (get_class($this) == 'HUEGroup' && $this->ReadPropertyTnteger("GroupId") == 0) {
       $this->SetStatus(104);
       return false;
     } elseif (get_class($this) == 'HUEGroup' || $values['reachable']) {
