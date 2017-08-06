@@ -5,6 +5,7 @@
     { "name": "UpdateInterval", "type": "IntervalBox", "caption": "Sekunden" },
     { "name": "LightsCategory", "type": "SelectCategory", "caption": "Lampenkategorie" },
     { "name": "GroupsCategory", "type": "SelectCategory", "caption": "Gruppenkategorie" },
+    { "name": "SensorsCategory", "type": "SelectCategory", "caption": "Sensorenkategorie" }
   ],
   "actions": [
     { "type": "Button", "label": "Geräte abgleichen", "onClick": "HUE_SyncDevices($id);" },
