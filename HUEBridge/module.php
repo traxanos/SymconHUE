@@ -363,18 +363,18 @@ class HUEBridge extends IPSModule {
   }
 
   public function GetDeviceByUniqueIdSensor(string $uniqueId) {
-  	$deviceIds = IPS_GetInstanceListByModuleID($this->SensorGuid());
-  	foreach($deviceIds as $deviceId) {
-  		if(IPS_GetProperty($deviceId, 'UniqueId') == $uniqueId) {
-  			return $deviceId;
-  		}
-  	}
+    $deviceIds = IPS_GetInstanceListByModuleID($this->SensorGuid());
+    foreach($deviceIds as $deviceId) {
+      if(IPS_GetProperty($deviceId, 'UniqueId') == $uniqueId) {
+        return $deviceId;
+      }
+    }
   }
 
   public function GetDeviceByGroupId(integer $groupId) {
     $deviceIds = IPS_GetInstanceListByModuleID($this->GroupGuid());
     foreach($deviceIds as $deviceId) {
-      if(IPS_GetProperty($deviceId, 'GroupId') == $groupId) {
+      if(IPS_GetProperty($deviceId, 'GroupId') == $groupId && $this->InstanceID == IPS_GetInstance($deviceId)['ConnectionID']) {
         return $deviceId;
       }
     }
