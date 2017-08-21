@@ -59,7 +59,7 @@ class HUEBridge extends IPSModule {
   }
 
   private function ValidateConfiguration() {
-  	if ($this->ReadPropertyInteger('LightsCategory') == 0 || $this->ReadPropertyString('Host') == '' || $this->ReadPropertyString('User') == '') {
+    if ($this->ReadPropertyInteger('LightsCategory') == 0 || $this->ReadPropertyString('Host') == '' || $this->ReadPropertyString('User') == '') {
       $this->SetStatus(104);
     } elseif(!$this->ValidateUser()) {
       $this->SetStatus(201);
@@ -81,15 +81,15 @@ class HUEBridge extends IPSModule {
     if($this->LightsCategory == '') $this->LightsCategory = $this->ReadPropertyInteger('LightsCategory');
     return $this->LightsCategory;
   }
-  
+
   private function GetGroupsCategory() {
-  	if($this->GroupsCategory == '') $this->GroupsCategory = $this->ReadPropertyInteger('GroupsCategory');
-  	return $this->GroupsCategory;
+    if($this->GroupsCategory == '') $this->GroupsCategory = $this->ReadPropertyInteger('GroupsCategory');
+    return $this->GroupsCategory;
   }
-  
+
   private function GetSensorsCategory() {
-  	if($this->SensorsCategory == '') $this->SensorsCategory = $this->ReadPropertyInteger('SensorsCategory');
-  	return $this->SensorsCategory;
+    if($this->SensorsCategory == '') $this->SensorsCategory = $this->ReadPropertyInteger('SensorsCategory');
+    return $this->SensorsCategory;
   }
 
   private function GetHost() {
@@ -197,9 +197,10 @@ class HUEBridge extends IPSModule {
    * Abgleich aller Lampen
    */
   public function SyncDevices() {
-  	$lightsCategoryId = $this->GetLightsCategory();
-  	$groupsCategoryId = $this->GetGroupsCategory();
-  	$sensorsCategoryId = $this->GetSensorsCategory();
+    $lightsCategoryId = $this->GetLightsCategory();
+    $groupsCategoryId = $this->GetGroupsCategory();
+    $sensorsCategoryId = $this->GetSensorsCategory();
+
     if(@$lightsCategoryId > 0) {
       $lights = $this->Request('/lights');
       if ($lights) {
@@ -233,6 +234,7 @@ class HUEBridge extends IPSModule {
       echo 'Lampen konnten nicht syncronisiert werden, da die Lampenkategorie nicht zugewiesen wurde.';
       IPS_LogMessage('SymconHUE', 'Lampen konnten nicht syncronisiert werden, da die Lampenkategorie nicht zugewiesen wurde.');
     }
+
     if(@$groupsCategoryId > 0) {
       $groups = (array)$this->Request('/groups');
       $group_zero = $this->Request('/groups/0');
@@ -268,49 +270,44 @@ class HUEBridge extends IPSModule {
       echo 'Gruppen konnten nicht syncronisiert werden, da die Gruppenkategorie nicht zugewiesen wurde.';
       IPS_LogMessage('SymconHUE', 'Gruppe konnten nicht syncronisiert werden, da die Gruppenkategorie nicht zugewiesen wurde.');
     }
-    if(@$sensorsCategoryId > 0) {
-    	$sensors = $this->Request('/sensors');
-    	if ($sensors) {
-    		foreach ($sensors as $sensorId => $sensor) {
-    			if($sensor->type == "ZLLPresence"){
-    				// only support ZLLPresence sensor 
-    			
-	    			$name = utf8_decode((string)$sensor->name);
-	    			$uniqueId = (string)$sensor->uniqueid;
-	    			
-	    			// only use first 26 characters as uniqueid
-	    			$uniqueId = substr($uniqueId, 0, 26);
-	    			
-	    			echo "Sensor \"$name\" ($sensorId - $uniqueId)\n";
-	    			
-	    			IPS_LogMessage('SymconHUE', "Sensor \"$name\" ($sensorId - $uniqueId)\n");
-	    			
-	    			$deviceId = $this->GetDeviceByUniqueIdSensor($uniqueId);
-	    			
-	    			if ($deviceId == 0) {
-	    				$deviceId = IPS_CreateInstance($this->SensorGuid());
-	    				IPS_SetProperty($deviceId, 'UniqueId', $uniqueId);
-	    			}
-	    			
-	    			IPS_SetParent($deviceId, $sensorsCategoryId);
-	    			IPS_SetProperty($deviceId, 'SensorId', (integer)$sensorId);
-	    			IPS_SetName($deviceId, $name);
-	    			
-	    			// Verbinde Light mit Bridge
-	    			if (IPS_GetInstance($deviceId)['ConnectionID'] <> $this->InstanceID) {
-	    				@IPS_DisconnectInstance($deviceId);
-	    				IPS_ConnectInstance($deviceId, $this->InstanceID);
-	    			}
-	    			
-	    			IPS_ApplyChanges($deviceId);
-	    			HUE_RequestData($deviceId);
-	    			
-    			}
-    		}
-    	}
+
+    if (@$sensorsCategoryId > 0) {
+      $sensors = $this->Request('/sensors');
+      if ($sensors) {
+        foreach ($sensors as $sensorId => $sensor) {
+          if($sensor->type == "ZLLPresence"){
+            // only support ZLLPresence sensor
+            $name = utf8_decode((string)$sensor->name);
+	    $uniqueId = (string)$sensor->uniqueid;
+	    // only use first 26 characters as uniqueid
+	    $uniqueId = substr($uniqueId, 0, 26);
+	    echo "Sensor \"$name\" ($sensorId - $uniqueId)\n";
+
+	    $deviceId = $this->GetDeviceByUniqueIdSensor($uniqueId);
+	    if ($deviceId == 0) {
+	      $deviceId = IPS_CreateInstance($this->SensorGuid());
+	      IPS_SetProperty($deviceId, 'UniqueId', $uniqueId);
+            }
+
+	    IPS_SetParent($deviceId, $sensorsCategoryId);
+
+	    IPS_SetProperty($deviceId, 'SensorId', (integer)$sensorId);
+	    IPS_SetName($deviceId, $name);
+
+	    // Verbinde Light mit Bridge
+	    if (IPS_GetInstance($deviceId)['ConnectionID'] <> $this->InstanceID) {
+              @IPS_DisconnectInstance($deviceId);
+              IPS_ConnectInstance($deviceId, $this->InstanceID);
+	    }
+
+	    IPS_ApplyChanges($deviceId);
+	    HUE_RequestData($deviceId);
+          }
+        }
+      }
     } else {
-    	echo 'Sensoren konnten nicht syncronisiert werden, da die Sensorenkategorie nicht zugewiesen wurde.';
-    	IPS_LogMessage('SymconHUE', 'Sensoren konnten nicht syncronisiert werden, da die Sensorenkategorie nicht zugewiesen wurde.');
+      echo 'Sensoren konnten nicht syncronisiert werden, da die Sensorenkategorie nicht zugewiesen wurde.';
+      IPS_LogMessage('SymconHUE', 'Sensoren konnten nicht syncronisiert werden, da die Sensorenkategorie nicht zugewiesen wurde.');
     }
     return true;
   }
@@ -328,6 +325,7 @@ class HUEBridge extends IPSModule {
         if($deviceId > 0) HUE_ApplyData($deviceId, $light);
       }
     }
+
     $groups = $this->Request('/groups');
     if ($groups) {
       foreach ($groups as $groupId => $group) {
@@ -335,18 +333,19 @@ class HUEBridge extends IPSModule {
         if($deviceId > 0) HUEGroup_ApplyData($deviceId, $group);
       }
     }
+
     $sensors = $this->Request('/sensors');
     if ($sensors) {
-    	foreach ($sensors as $sensorId => $sensor) {
-    		if($sensor->type == "ZLLPresence" || $sensor->type == "ZLLLightLevel" || $sensor->type == "ZLLTemperature"){
-    			// only support ZLLPresence sensor, also read data from ZLLLightLevel and ZLLTemperature sensors
-	    		$uniqueId = (string)$sensor->uniqueid;
-	    		// only use first 26 characters as uniqueid
-	    		$uniqueId = substr($uniqueId, 0, 26);
-	        	$deviceId = $this->GetDeviceByUniqueIdSensor($uniqueId);
-	    		if($deviceId > 0) HUE_ApplyData($deviceId, $sensor);
-    		}
-    	}
+      foreach ($sensors as $sensorId => $sensor) {
+        if($sensor->type == "ZLLPresence" || $sensor->type == "ZLLLightLevel" || $sensor->type == "ZLLTemperature"){
+          // only support ZLLPresence sensor, also read data from ZLLLightLevel and ZLLTemperature sensors
+          $uniqueId = (string)$sensor->uniqueid;
+          // only use first 26 characters as uniqueid
+          $uniqueId = substr($uniqueId, 0, 26);
+          $deviceId = $this->GetDeviceByUniqueIdSensor($uniqueId);
+          if($deviceId > 0) HUE_ApplyData($deviceId, $sensor);
+        }
+      }
     }
   }
 
@@ -362,7 +361,7 @@ class HUEBridge extends IPSModule {
       }
     }
   }
-  
+
   public function GetDeviceByUniqueIdSensor(string $uniqueId) {
   	$deviceIds = IPS_GetInstanceListByModuleID($this->SensorGuid());
   	foreach($deviceIds as $deviceId) {
@@ -380,17 +379,16 @@ class HUEBridge extends IPSModule {
       }
     }
   }
-  
+
   private function LightGuid() {
   	return '{729BE8EB-6624-4C6B-B9E5-6E09482A3E36}';
   }
-  
+
   private function GroupGuid() {
   	return '{C47C8889-02C4-40A2-B18A-DBD9E47CE23D}';
   }
-  
+
   private function SensorGuid() {
   	return '{C0D95A01-1891-4953-A3B3-779678E9C955}';
   }
-
 }

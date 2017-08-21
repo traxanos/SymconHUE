@@ -34,9 +34,9 @@ abstract class HUEDevice extends IPSModule {
 
   public function ApplyData($data) {
     $data = (array)$data;
-    if(get_class($this) == 'HUEGroup') {
+    if (get_class($this) == 'HUEGroup') {
       $values = (array)@$data['action'];
-    } elseif(get_class($this) == 'HUESensor') {
+    } elseif (get_class($this) == 'HUESensor') {
     	$values = (array)@$data['config'];
     	$values_state = (array)@$data['state'];
     } else {
@@ -47,12 +47,9 @@ abstract class HUEDevice extends IPSModule {
     if (get_class($this) == 'HUELight' && $this->ReadPropertyString("UniqueId") == '') {
       $this->SetStatus(104);
       return false;
-    }else if (get_class($this) == 'HUESensor' && $this->ReadPropertyString("UniqueId") == '') {
-    	$this->SetStatus(104);
-    	return false;
-    //} elseif (get_class($this) == 'HUEGroup' && $this->ReadPropertyInteger("GroupId") == 0) {
-    //  $this->SetStatus(104);
-    //  return false;
+    } elseif (get_class($this) == 'HUESensor' && $this->ReadPropertyString("UniqueId") == '') {
+      $this->SetStatus(104);
+      return false;
     } elseif (get_class($this) == 'HUEGroup' || $values['reachable']) {
       $this->SetStatus(102);
     } else {
@@ -71,67 +68,63 @@ abstract class HUEDevice extends IPSModule {
       IPS_SetName($this->InstanceID, $name);
       $dirty = true;
     }
-    
+
     if (get_class($this) == 'HUELight') {
-    	$modelid = utf8_decode((string)$data['modelid']);
-    	if (IPS_GetProperty($this->InstanceID, 'ModelId') != $modelid) {
-    		IPS_SetProperty($this->InstanceID, 'ModelId', $modelid);
-    		$dirty = true;
-    	}
-    	$type = utf8_decode((string)$data['type']);
-    	if (IPS_GetProperty($this->InstanceID, 'Type') != $type) {
-    		IPS_SetProperty($this->InstanceID, 'Type', $type);
-    		$dirty = true;
-    	}
-    }
-    
-    if (get_class($this) == 'HUESensor') {
-    	
-    	$name = utf8_decode((string)$data['name']);
-    	$type = utf8_decode((string)$data['type']);
-    	$modelid = utf8_decode((string)$data['modelid']);
-    	
-    	// We will receive three types of sensors, but only ZLLPresence will contains the correct name, model and type
-    	
-    	if (IPS_GetName($this->InstanceID) != $name && $type == "ZLLPresence") {
-    		IPS_SetName($this->InstanceID, $name);
-    		$dirty = true;
-    	}
-    	if (IPS_GetProperty($this->InstanceID, 'ModelId') != $modelid && $type == "ZLLPresence") {
-    		IPS_SetProperty($this->InstanceID, 'ModelId', $modelid);
-    		$dirty = true;
-    	}
-    	if (IPS_GetProperty($this->InstanceID, 'Type') != $type && $type == "ZLLPresence") {
-    		IPS_SetProperty($this->InstanceID, 'Type', $type);
-    		$dirty = true;
-    	}
+      $modelid = utf8_decode((string)$data['modelid']);
+      if (IPS_GetProperty($this->InstanceID, 'ModelId') != $modelid) {
+        IPS_SetProperty($this->InstanceID, 'ModelId', $modelid);
+        $dirty = true;
+      }
+      $type = utf8_decode((string)$data['type']);
+      if (IPS_GetProperty($this->InstanceID, 'Type') != $type) {
+        IPS_SetProperty($this->InstanceID, 'Type', $type);
+        $dirty = true;
+      }
     }
 
-    if (get_class($this) == 'HUELight' || get_class($this) == 'HUEGroup'){
-	    // Setze den Modus
-	    if (!isset($values['bri'])) {
-	      // Keine Helligkeit, somit keine Licht-Funktionen
-	      $lightFeature = 4;
-	    } elseif (isset($values['ct']) && isset($values['hue'])) {
-	      // HUE+CT Lamp
-	      $lightFeature = 0;
-	    } elseif(isset($values['hue'])) {
-	      // HUE Lamp
-	      $lightFeature = 1;
-	    } elseif(isset($values['ct'])) {
-	      // CT Lamp
-	      $lightFeature = 2;
-	    } else {
-	      // Lux Lamp
-	      $lightFeature = 3;
-	    }
-	
-	    if (IPS_GetProperty($this->InstanceID, 'LightFeatures') != $lightFeature) {
-	      IPS_SetProperty($this->InstanceID, 'LightFeatures', $lightFeature);
-	      $dirty = true;
-	    }
+    if (get_class($this) == 'HUESensor') {
+      $name = utf8_decode((string)$data['name']);
+      $type = utf8_decode((string)$data['type']);
+      $modelid = utf8_decode((string)$data['modelid']);
+      // We will receive three types of sensors, but only ZLLPresence will contains the correct name, model and type
+      if (IPS_GetName($this->InstanceID) != $name && $type == "ZLLPresence") {
+        IPS_SetName($this->InstanceID, $name);
+        $dirty = true;
+      }
+      if (IPS_GetProperty($this->InstanceID, 'ModelId') != $modelid && $type == "ZLLPresence") {
+        IPS_SetProperty($this->InstanceID, 'ModelId', $modelid);
+        $dirty = true;
+      }
+      if (IPS_GetProperty($this->InstanceID, 'Type') != $type && $type == "ZLLPresence") {
+        IPS_SetProperty($this->InstanceID, 'Type', $type);
+        $dirty = true;
+      }
     }
-	    
+
+    if (get_class($this) == 'HUELight' || get_class($this) == 'HUEGroup') {
+      // Setze den Modus
+      if (!isset($values['bri'])) {
+        // Keine Helligkeit, somit keine Licht-Funktionen
+        $lightFeature = 4;
+      } elseif (isset($values['ct']) && isset($values['hue'])) {
+        // HUE+CT Lamp
+        $lightFeature = 0;
+      } elseif(isset($values['hue'])) {
+        // HUE Lamp
+        $lightFeature = 1;
+      } elseif(isset($values['ct'])) {
+        // CT Lamp
+        $lightFeature = 2;
+      } else {
+        // Lux Lamp
+        $lightFeature = 3;
+      }
+
+      if (IPS_GetProperty($this->InstanceID, 'LightFeatures') != $lightFeature) {
+        IPS_SetProperty($this->InstanceID, 'LightFeatures', $lightFeature);
+        $dirty = true;
+      }
+    }
 
     if ($dirty) IPS_ApplyChanges($this->InstanceID);
 
@@ -140,167 +133,153 @@ abstract class HUEDevice extends IPSModule {
      */
 
     if (get_class($this) == 'HUELight' || get_class($this) == 'HUEGroup'){
-    
-	    if (!$valuesId = @$this->GetIDForIdent("STATE")) {
-	      $valuesId = $this->RegisterVariableBoolean("STATE", "Zustand", "~Switch", 1);
-	      $this->EnableAction("STATE");
-	      //IPS_SetPosition($valuesId, 1);
-	    }
-	
-	    if (!$cmId = @$this->GetIDForIdent("COLOR_MODE")) {
-	      $cmId = $this->RegisterVariableInteger("COLOR_MODE", "Modus", "ColorModeSelect.Hue", 2);
-	      $this->EnableAction("COLOR_MODE");
-	      //IPS_SetPosition($cmId, 2);
-	      IPS_SetIcon($cmId, 'ArrowRight');
-	   }
-	
-	    if ($lightFeature != 4) {
-	      if (!$briId = @$this->GetIDForIdent("BRIGHTNESS")) {
-	        $briId = $this->RegisterVariableInteger("BRIGHTNESS", "Helligkeit", "~Intensity.255", 5);
-	        $this->EnableAction("BRIGHTNESS");
-	        IPS_SetIcon($briId, 'Sun');
-	        //IPS_SetPosition($briId, 5);
-	      }
-	    } else {
-	      $delete = @IPS_GetObjectIDByIdent("BRIGHTNESS", $this->InstanceID);
-	      if ($delete !== false) IPS_DeleteVariable($delete);
-	    }
-	
-	    if ($lightFeature == 0 || $lightFeature == 1) {
-	      if (!$hueId = @$this->GetIDForIdent("HUE")) {
-	        $hueId = $this->RegisterVariableInteger("HUE", "Hue");
-	        IPS_SetHidden($hueId, true);
-	      }
-	    } else {
-	      $delete = @IPS_GetObjectIDByIdent("HUE", $this->InstanceID);
-	      if ($delete !== false) IPS_DeleteVariable($delete);
-	    }
-	
-	    if ($lightFeature == 0) {
-	      IPS_SetVariableCustomProfile($cmId, 'ColorModeSelect.Hue');
-	      IPS_SetHidden($cmId, false);
-	    } else {
-	      IPS_SetHidden($cmId, true);
-	    }
-	
-	    if ($lightFeature == 0 || $lightFeature == 2) {
-	      if (!$ctId = @$this->GetIDForIdent("COLOR_TEMPERATURE")) {
-	        $ctId = $this->RegisterVariableInteger("COLOR_TEMPERATURE", "Farbtemperatur", "ColorTemperatureSelect.Hue", 4);
-	        $this->EnableAction("COLOR_TEMPERATURE");
-	        IPS_SetIcon($ctId, 'Bulb');
-	        //IPS_SetPosition($ctId, 4);
-	      }
-	    } else {
-	      $delete = @IPS_GetObjectIDByIdent("COLOR_TEMPERATURE", $this->InstanceID);
-	      if ($delete !== false) IPS_DeleteVariable($delete);
-	    }
-	
-	    if ($lightFeature == 0 || $lightFeature == 1) {
-	      if (!$colorId = @$this->GetIDForIdent("COLOR")) {
-	        $colorId = $this->RegisterVariableInteger("COLOR", "Farbe", "~HexColor", 3);
-	        $this->EnableAction("COLOR");
-	        //IPS_SetPosition($colorId, 3);
-	        IPS_SetIcon($colorId, 'Bulb');
-	      }
-	
-	      if (!$satId = @$this->GetIDForIdent("SATURATION")) {
-	        $satId = $this->RegisterVariableInteger("SATURATION", utf8_decode("Sättigung"), "~Intensity.255", 6);
-	        $this->EnableAction("SATURATION");
-	        IPS_SetIcon($satId, 'Intensity');
-	        //IPS_SetPosition($satId, 6);
-	      }
-	    } else {
-	      $delete = @IPS_GetObjectIDByIdent("COLOR", $this->InstanceID);
-	      if ($delete !== false) IPS_DeleteVariable($delete);
-	      $delete = @IPS_GetObjectIDByIdent("SATURATION", $this->InstanceID);
-	      if ($delete !== false) IPS_DeleteVariable($delete);
-	    }
-	    
-    }else if(get_class($this) == 'HUESensor'){
-    	
-    	if (!$presenceId = @$this->GetIDForIdent("PRESENCE")) {
-    		$presenceId= $this->RegisterVariableBoolean("PRESENCE", "Anwesenheit", "~Presence", 1);
-    		//$this->EnableAction("PRESENCE");
-    		IPS_SetIcon($presenceId, 'Motion');
-    		//IPS_SetPosition($valuesId, 1);
-    	}
-    	
-    	if (!$temperatureId = @$this->GetIDForIdent("TEMPERATURE")) {
-    		$temperatureId= $this->RegisterVariableFloat("TEMPERATURE", "Temperatur", "~Temperature", 2);
-    		//$this->EnableAction("TEMPERATURE");
-    		IPS_SetIcon($temperatureId, 'Temperature');
-    		//IPS_SetPosition($valuesId, 1);
-    	}
-    	
-    	if (!$illuminationId = @$this->GetIDForIdent("ILLUMINATION")) {
-    		$illuminationId= $this->RegisterVariableFloat("ILLUMINATION", "Erleuchtung", "~Illumination.F", 3);
-    		//$this->EnableAction("ILLUMINATION");
-    		IPS_SetIcon($illuminationId, 'Sun');
-    		//IPS_SetPosition($valuesId, 1);
-    	}
-    	
-    	if (!$batteryId = @$this->GetIDForIdent("BATTERY")) {
-    		$batteryId= $this->RegisterVariableInteger("BATTERY", "Batterie", "~Battery.100", 4);
-    		//$this->EnableAction("BATTERY");
-    		IPS_SetIcon($batteryId, 'Battery');
-    		//IPS_SetPosition($valuesId, 1);
-    	}
-    	
-    }
+      if (!$valuesId = @$this->GetIDForIdent("STATE")) {
+        $valuesId = $this->RegisterVariableBoolean("STATE", "Zustand", "~Switch", 1);
+        $this->EnableAction("STATE");
+        //IPS_SetPosition($valuesId, 1);
+      }
 
-    /*
-     * Values
-     */
+      if (!$cmId = @$this->GetIDForIdent("COLOR_MODE")) {
+        $cmId = $this->RegisterVariableInteger("COLOR_MODE", "Modus", "ColorModeSelect.Hue", 2);
+        $this->EnableAction("COLOR_MODE");
+        //IPS_SetPosition($cmId, 2);
+        IPS_SetIcon($cmId, 'ArrowRight');
+      }
+
+      if ($lightFeature != 4) {
+        if (!$briId = @$this->GetIDForIdent("BRIGHTNESS")) {
+          $briId = $this->RegisterVariableInteger("BRIGHTNESS", "Helligkeit", "~Intensity.255", 5);
+          $this->EnableAction("BRIGHTNESS");
+          IPS_SetIcon($briId, 'Sun');
+          //IPS_SetPosition($briId, 5);
+        }
+      } else {
+        $delete = @IPS_GetObjectIDByIdent("BRIGHTNESS", $this->InstanceID);
+        if ($delete !== false) IPS_DeleteVariable($delete);
+      }
+
+      if ($lightFeature == 0 || $lightFeature == 1) {
+        if (!$hueId = @$this->GetIDForIdent("HUE")) {
+          $hueId = $this->RegisterVariableInteger("HUE", "Hue");
+          IPS_SetHidden($hueId, true);
+        }
+      } else {
+        $delete = @IPS_GetObjectIDByIdent("HUE", $this->InstanceID);
+        if ($delete !== false) IPS_DeleteVariable($delete);
+      }
+
+      if ($lightFeature == 0) {
+        IPS_SetVariableCustomProfile($cmId, 'ColorModeSelect.Hue');
+        IPS_SetHidden($cmId, false);
+      } else {
+        IPS_SetHidden($cmId, true);
+      }
+
+      if ($lightFeature == 0 || $lightFeature == 2) {
+        if (!$ctId = @$this->GetIDForIdent("COLOR_TEMPERATURE")) {
+          $ctId = $this->RegisterVariableInteger("COLOR_TEMPERATURE", "Farbtemperatur", "ColorTemperatureSelect.Hue", 4);
+          $this->EnableAction("COLOR_TEMPERATURE");
+          IPS_SetIcon($ctId, 'Bulb');
+          //IPS_SetPosition($ctId, 4);
+        }
+      } else {
+        $delete = @IPS_GetObjectIDByIdent("COLOR_TEMPERATURE", $this->InstanceID);
+        if ($delete !== false) IPS_DeleteVariable($delete);
+      }
+
+      if ($lightFeature == 0 || $lightFeature == 1) {
+        if (!$colorId = @$this->GetIDForIdent("COLOR")) {
+          $colorId = $this->RegisterVariableInteger("COLOR", "Farbe", "~HexColor", 3);
+          $this->EnableAction("COLOR");
+          //IPS_SetPosition($colorId, 3);
+          IPS_SetIcon($colorId, 'Bulb');
+        }
+
+        if (!$satId = @$this->GetIDForIdent("SATURATION")) {
+          $satId = $this->RegisterVariableInteger("SATURATION", utf8_decode("Sättigung"), "~Intensity.255", 6);
+          $this->EnableAction("SATURATION");
+          IPS_SetIcon($satId, 'Intensity');
+          //IPS_SetPosition($satId, 6);
+        }
+      } else {
+        $delete = @IPS_GetObjectIDByIdent("COLOR", $this->InstanceID);
+        if ($delete !== false) IPS_DeleteVariable($delete);
+        $delete = @IPS_GetObjectIDByIdent("SATURATION", $this->InstanceID);
+        if ($delete !== false) IPS_DeleteVariable($delete);
+      }
+
+    } elseif (get_class($this) == 'HUESensor') {
+      if (!$presenceId = @$this->GetIDForIdent("PRESENCE")) {
+        $presenceId = $this->RegisterVariableBoolean("PRESENCE", "Anwesenheit", "~Presence", 1);
+        //$this->EnableAction("PRESENCE");
+        IPS_SetIcon($presenceId, 'Motion');
+        //IPS_SetPosition($valuesId, 1);
+      }
+
+      if (!$temperatureId = @$this->GetIDForIdent("TEMPERATURE")) {
+        $temperatureId = $this->RegisterVariableFloat("TEMPERATURE", "Temperatur", "~Temperature", 2);
+        //$this->EnableAction("TEMPERATURE");
+        IPS_SetIcon($temperatureId, 'Temperature');
+        //IPS_SetPosition($valuesId, 1);
+      }
+
+      if (!$illuminationId = @$this->GetIDForIdent("ILLUMINATION")) {
+        $illuminationId = $this->RegisterVariableFloat("ILLUMINATION", "Erleuchtung", "~Illumination.F", 3);
+        //$this->EnableAction("ILLUMINATION");
+        IPS_SetIcon($illuminationId, 'Sun');
+        //IPS_SetPosition($valuesId, 1);
+      }
+
+      if (!$batteryId = @$this->GetIDForIdent("BATTERY")) {
+        $batteryId = $this->RegisterVariableInteger("BATTERY", "Batterie", "~Battery.100", 4);
+        //$this->EnableAction("BATTERY");
+        IPS_SetIcon($batteryId, 'Battery');
+        //IPS_SetPosition($valuesId, 1);
+      }
+    }
 
     if (get_class($this) == 'HUELight' || get_class($this) == 'HUEGroup'){
-    
-	    if (get_class($this) == 'HUELight' && !$values['reachable']) {
-	      SetValueBoolean($valuesId, false);
-	    } else {
-	      SetValueBoolean($valuesId, $values['on']);
-	    }
-	    if (@$briId) SetValueInteger($briId, $values['bri']);
-	    if (@$satId) SetValueInteger($satId, $values['sat']);
-	    if (@$hueId) SetValueInteger($hueId, $values['hue']);
-	    if (@$ctId) SetValueInteger($ctId, $values['ct']);
-	
-	    switch (@$values['colormode']) {
-	      case 'xy':
-	      case 'hs':
-	        $hex = $this->HSV2HEX($values['hue'], $values['sat'], $values['bri']);
-	        SetValueInteger($colorId, hexdec($hex));
-	        IPS_SetHidden($colorId, false);
-	        IPS_SetHidden($satId, false);
-	        if (@$ctId) IPS_SetHidden($ctId, true);
-	        if (@$cmId) SetValueInteger($cmId, 0);
-	        break;
-	      case 'ct':
-	        if(@$colorId) IPS_SetHidden($colorId, true);
-	        if(@$satId) IPS_SetHidden($satId, true);
-	        IPS_SetHidden($ctId, false);
-	        SetValueInteger($cmId, 1);
-	        break;
-	    }
-	    
-    }else if(get_class($this) == 'HUESensor'){
-    	
-    	if (@$presenceId && isset($values_state['presence'])) { 
-    		SetValueBoolean($presenceId, $values_state['presence']);
-    		if (@$batteryId) SetValueInteger($batteryId, $values['battery']); // only update battery from presence
-    	}
-    	
-    	if (@$illuminationId && isset($values_state['lightlevel'])) {
-    		SetValueFloat($illuminationId, $values_state['lightlevel']);
-    	}
-    	
-    	if (@$temperatureId && isset($values_state['temperature'])) {
-    		SetValueFloat($temperatureId, ($values_state['temperature']/100));
-    	}
-    	
-    	
-    	
+      if (get_class($this) == 'HUELight' && !$values['reachable']) {
+        SetValueBoolean($valuesId, false);
+      } else {
+        SetValueBoolean($valuesId, $values['on']);
+      }
+
+      if (@$briId) SetValueInteger($briId, $values['bri']);
+      if (@$satId) SetValueInteger($satId, $values['sat']);
+      if (@$hueId) SetValueInteger($hueId, $values['hue']);
+      if (@$ctId) SetValueInteger($ctId, $values['ct']);
+
+      switch (@$values['colormode']) {
+        case 'xy':
+        case 'hs':
+          $hex = $this->HSV2HEX($values['hue'], $values['sat'], $values['bri']);
+          SetValueInteger($colorId, hexdec($hex));
+          IPS_SetHidden($colorId, false);
+          IPS_SetHidden($satId, false);
+          if (@$ctId) IPS_SetHidden($ctId, true);
+          if (@$cmId) SetValueInteger($cmId, 0);
+          break;
+        case 'ct':
+          if(@$colorId) IPS_SetHidden($colorId, true);
+          if(@$satId) IPS_SetHidden($satId, true);
+          IPS_SetHidden($ctId, false);
+          SetValueInteger($cmId, 1);
+          break;
+      }
+
+    } elseif (get_class($this) == 'HUESensor') {
+      if (@$presenceId && isset($values_state['presence'])) {
+        SetValueBoolean($presenceId, $values_state['presence']);
+        if (@$batteryId) SetValueInteger($batteryId, $values['battery']); // only update battery from presence
+      }
+      if (@$illuminationId && isset($values_state['lightlevel'])) {
+        SetValueFloat($illuminationId, $values_state['lightlevel']);
+      }
+      if (@$temperatureId && isset($values_state['temperature'])) {
+        SetValueFloat($temperatureId, ($values_state['temperature']/100));
+      }
     }
-	    
   }
 
   /*
