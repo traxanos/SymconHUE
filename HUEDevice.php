@@ -336,7 +336,7 @@ abstract class HUEDevice extends IPSModule {
   }
 
   /*
-   * HUE_SetValue($id, $key, $value)
+   * HUE_SetValue(int $id, string $key, $value)
    * Anpassung eines Lampenparameter siehe SetValues
    */
   public function SetValue($key, $value) {
@@ -346,42 +346,42 @@ abstract class HUEDevice extends IPSModule {
   }
 
   /*
-   * HUE_SetState(integer $id, boolean $value)
+   * HUE_SetState(int $id, boolean $value)
    */
   public function SetState(boolean $value) {
     return $this->SetValues(array('STATE' => $value));
   }
 
   /*
-   * HUE_GetState(integer $id)
+   * HUE_GetState(int $id)
    */
   public function GetState() {
     return $this->GetValue('STATE');
   }
 
   /*
-   * HUE_SetColor(integer $id, integer $value)
+   * HUE_SetColor(int $id, int $value)
    */
-  public function SetColor(integer $value) {
+  public function SetColor(int $value) {
     return $this->SetValues(array('STATE' => true, 'COLOR_MODE' => 0, 'COLOR' => $value));
   }
 
   /*
-   * HUE_GetColor(integer $id)
+   * HUE_GetColor(int $id)
    */
   public function GetColor() {
     return $this->GetValue('COLOR');
   }
 
   /*
-   * HUE_SetBrightness(integer $id, integer $value)
+   * HUE_SetBrightness(int $id, int $value)
    */
-  public function SetBrightness(integer $value) {
+  public function SetBrightness(int $value) {
     return $this->SetValues(array('STATE' => true, 'BRIGHTNESS' => $value));
   }
 
   /*
-   * HUE_GetBrightness(integer $id)
+   * HUE_GetBrightness(int $id)
    */
   public function GetBrightness() {
     return $this->GetValue('BRIGHTNESS');
@@ -534,7 +534,7 @@ abstract class HUEDevice extends IPSModule {
       $path = $this->BasePath() . "/state";
     }
 
-    //print_r($changes);
+//    print_r($changes);
     return HUE_Request($this->GetBridge(), $path, $changes);
   }
 

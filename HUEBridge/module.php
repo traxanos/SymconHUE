@@ -371,7 +371,7 @@ class HUEBridge extends IPSModule {
     }
   }
 
-  public function GetDeviceByGroupId(integer $groupId) {
+  public function GetDeviceByGroupId(int $groupId) {
     $deviceIds = IPS_GetInstanceListByModuleID($this->GroupGuid());
     foreach($deviceIds as $deviceId) {
       if(IPS_GetProperty($deviceId, 'GroupId') == $groupId && $this->InstanceID == IPS_GetInstance($deviceId)['ConnectionID']) {
