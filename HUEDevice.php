@@ -346,9 +346,9 @@ abstract class HUEDevice extends IPSModule {
   }
 
   /*
-   * HUE_SetState(int $id, boolean $value)
+   * HUE_SetState(int $id, bool $value)
    */
-  public function SetState(boolean $value) {
+  public function SetState(bool $value) {
     return $this->SetValues(array('STATE' => $value));
   }
 
