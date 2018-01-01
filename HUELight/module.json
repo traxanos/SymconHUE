@@ -2,7 +2,7 @@
   "id": "{729BE8EB-6624-4C6B-B9E5-6E09482A3E36}",
   "name": "HUELight",
   "type": 3,
-  "vendor": "Philips Hue",
+  "vendor": "Philips",
   "aliases": [ "Philips Hue Light" ],
   "parentRequirements": [ "{D792637E-79F8-4EB0-ABC4-A641C2F4CC3B}" ],
   "childRequirements": [],

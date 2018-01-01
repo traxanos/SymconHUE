@@ -2,7 +2,7 @@
   "id": "{9C6FB2C8-0155-4A59-97A7-2F6D62608908}",
   "name": "HUEBridge",
   "type": 1,
-  "vendor": "Philips Hue",
+  "vendor": "Philips",
   "aliases": [ "Philips Hue Bridge" ],
   "parentRequirements": [],
   "childRequirements": [ "{0046C3E1-28E6-40CF-9358-4C992F58F9EE}" ],

@@ -2,66 +2,32 @@
 
 class HUEBridge extends IPSModule {
 
-  private $Host = "";
-  private $User = "";
-  private $LightsCategory = 0;
-  private $GroupsCategory = 0;
-  private $SensorsCategory = 0;
-
   public function Create() {
     parent::Create();
-    $this->RegisterPropertyString("Host", "");
-    $this->RegisterPropertyString("User", "");
-    $this->RegisterPropertyInteger("LightsCategory", 0);
-    $this->RegisterPropertyInteger("GroupsCategory", 0);
-    $this->RegisterPropertyInteger("SensorsCategory", 0);
-    $this->RegisterPropertyInteger("UpdateInterval", 5);
+    $this->RegisterPropertyString('Host', '');
+    $this->RegisterPropertyString('User', '');
+    $this->RegisterPropertyInteger('LightsCategory', 0);
+    $this->RegisterPropertyInteger('GroupsCategory', 0);
+    $this->RegisterPropertyInteger('SensorsCategory', 0);
+    $this->RegisterPropertyInteger('UpdateInterval', 5);
+
+    $this->RegisterTimer('Update', 0, 'HUE_SyncStates($_IPS[\'TARGET\'], 0);');
+
+    if ($oldInterval = @$this->GetIDForIdent('UPDATE')) IPS_DeleteEvent($oldInterval);
   }
 
   public function ApplyChanges() {
-    $this->Host = "";
-    $this->User = "";
-
     parent::ApplyChanges();
 
-    $this->RegisterTimer('UPDATE', $this->ReadPropertyInteger('UpdateInterval'), 'HUE_SyncStates($id)');
+    $this->SetTimerInterval('Update', $this->ReadPropertyInteger('UpdateInterval') * 1000);
 
     $this->ValidateConfiguration();
-  }
-
-  protected function RegisterTimer($ident, $interval, $script) {
-    $id = @IPS_GetObjectIDByIdent($ident, $this->InstanceID);
-
-    if ($id && IPS_GetEvent($id)['EventType'] <> 1) {
-      IPS_DeleteEvent($id);
-      $id = 0;
-    }
-
-    if (!$id) {
-      $id = IPS_CreateEvent(1);
-      IPS_SetParent($id, $this->InstanceID);
-      IPS_SetIdent($id, $ident);
-    }
-
-    IPS_SetName($id, $ident);
-    IPS_SetHidden($id, true);
-    IPS_SetEventScript($id, "\$id = \$_IPS['TARGET'];\n$script;");
-
-    if (!IPS_EventExists($id)) IPS_LogMessage("SymconHUE", "Ident with name $ident is used for wrong object type");
-
-    if (!($interval > 0)) {
-      IPS_SetEventCyclic($id, 0, 0, 0, 0, 1, 1);
-      IPS_SetEventActive($id, false);
-    } else {
-      IPS_SetEventCyclic($id, 0, 0, 0, 0, 1, $interval);
-      IPS_SetEventActive($id, true);
-    }
   }
 
   private function ValidateConfiguration() {
     if ($this->ReadPropertyInteger('LightsCategory') == 0 || $this->ReadPropertyString('Host') == '' || $this->ReadPropertyString('User') == '') {
       $this->SetStatus(104);
-    } elseif(!$this->ValidateUser()) {
+    } elseif (!$this->ValidateUser()) {
       $this->SetStatus(201);
     } else {
       $this->SetStatus(102);
@@ -69,48 +35,21 @@ class HUEBridge extends IPSModule {
   }
 
   private function ValidateUser() {
-    $result = (array)$this->Request("/lights", null);
-    if(!isset($result[0]) && !isset($result[0]->error)) {
+    $result = (array)$this->Request('/lights', null);
+    if (!isset($result[0]) && !isset($result[0]->error)) {
       return true;
     } else {
       return false;
     }
   }
 
-  private function GetLightsCategory() {
-    if($this->LightsCategory == '') $this->LightsCategory = $this->ReadPropertyInteger('LightsCategory');
-    return $this->LightsCategory;
-  }
-
-  private function GetGroupsCategory() {
-    if($this->GroupsCategory == '') $this->GroupsCategory = $this->ReadPropertyInteger('GroupsCategory');
-    return $this->GroupsCategory;
-  }
-
-  private function GetSensorsCategory() {
-    if($this->SensorsCategory == '') $this->SensorsCategory = $this->ReadPropertyInteger('SensorsCategory');
-    return $this->SensorsCategory;
-  }
-
-  private function GetHost() {
-    if($this->Host == '') $this->Host = $this->ReadPropertyString('Host');
-    return $this->Host;
-  }
-
-  private function GetUser() {
-    if($this->User == '') {
-      $this->User = $this->ReadPropertyString('User');
-    }
-    return $this->User;
-  }
-
   public function Request(string $path, array $data = null) {
-    $host = $this->GetHost();
-    $user = $this->GetUser();
+    $host = $this->ReadPropertyString('Host');
+    $user = $this->ReadPropertyString('User');
 
     $client = curl_init();
     curl_setopt($client, CURLOPT_URL, "http://$host:80/api/$user$path");
-    curl_setopt($client, CURLOPT_USERAGENT, "SymconHUE");
+    curl_setopt($client, CURLOPT_USERAGENT, 'SymconHUE');
     curl_setopt($client, CURLOPT_CONNECTTIMEOUT, 5);
     curl_setopt($client, CURLOPT_TIMEOUT, 5);
     curl_setopt($client, CURLOPT_RETURNTRANSFER, 1);
@@ -137,7 +76,7 @@ class HUEBridge extends IPSModule {
         if (count($result) > 0) {
           foreach ($result as $item) {
             if (@$item->error) {
-              IPS_LogMessage("HUE_Bridge", print_r(@$item->error, 1));
+              IPS_LogMessage('SymconHUE', print_r(@$item->error, 1));
               $this->SetStatus(299);
               return false;
             }
@@ -153,13 +92,13 @@ class HUEBridge extends IPSModule {
   }
 
   public function RegisterUser() {
-    $host = $this->GetHost();
-    $json = json_encode(array('devicetype' => "IPS"));
+    $host = $this->ReadPropertyString('Host');
+    $json = json_encode(array('devicetype' => 'IPS'));
     $lenght = strlen($json);
 
     $client = curl_init();
     curl_setopt($client, CURLOPT_URL, "http://$host:80/api");
-    curl_setopt($client, CURLOPT_USERAGENT, "SymconHUE");
+    curl_setopt($client, CURLOPT_USERAGENT, 'SymconHUE');
     curl_setopt($client, CURLOPT_CONNECTTIMEOUT, 5);
     curl_setopt($client, CURLOPT_TIMEOUT, 5);
     curl_setopt($client, CURLOPT_RETURNTRANSFER, 1);
@@ -173,17 +112,17 @@ class HUEBridge extends IPSModule {
       $this->SetStatus(203);
       return false;
     } elseif ($status != '200') {
-      IPS_LogMessage("SymconHUE", "Response invalid. Code $status");
+      IPS_LogMessage('SymconHUE', "Response invalid. Code $status");
     } else {
       $result = json_decode($result);
-      if(@isset($result[0]->error)) {
+      if (@isset($result[0]->error)) {
         $this->SetStatus(202);
       } else {
-        if(@isset($result[0]->success->username) && $result[0]->success->username != '') {
+        if (@isset($result[0]->success->username) && $result[0]->success->username != '') {
           $user = $result[0]->success->username;
           IPS_SetConfiguration($this->InstanceID, json_encode(array('User' => $user)));
           IPS_ApplyChanges($this->InstanceID);
-          print_r("Die Registrierung war erfoglreich. Schließen Sie die Konfigurationsmaske, damit der Benutzername übernommen wird.");
+          print_r('Die Registrierung war erfoglreich. Schließen Sie die Konfigurationsmaske, damit der Benutzername übernommen wird.');
           $this->SetStatus(102);
         } else {
           $this->SetStatus(202);
@@ -197,11 +136,11 @@ class HUEBridge extends IPSModule {
    * Abgleich aller Lampen
    */
   public function SyncDevices() {
-    $lightsCategoryId = $this->GetLightsCategory();
-    $groupsCategoryId = $this->GetGroupsCategory();
-    $sensorsCategoryId = $this->GetSensorsCategory();
+    $lightsCategoryId = $this->ReadPropertyInteger('LightsCategory');
+    $groupsCategoryId = $this->ReadPropertyInteger('GroupsCategory');
+    $sensorsCategoryId = $this->ReadPropertyInteger('SensorsCategory');
 
-    if(@$lightsCategoryId > 0) {
+    if (@$lightsCategoryId > 0) {
       $lights = $this->Request('/lights');
       if ($lights) {
         foreach ($lights as $lightId => $light) {
@@ -235,7 +174,7 @@ class HUEBridge extends IPSModule {
       IPS_LogMessage('SymconHUE', 'Lampen konnten nicht syncronisiert werden, da die Lampenkategorie nicht zugewiesen wurde.');
     }
 
-    if(@$groupsCategoryId > 0) {
+    if (@$groupsCategoryId > 0) {
       $groups = (array)$this->Request('/groups');
       $group_zero = $this->Request('/groups/0');
       $group_zero->name = "All";
@@ -263,7 +202,7 @@ class HUEBridge extends IPSModule {
           }
 
           IPS_ApplyChanges($deviceId);
-          HUEGroup_RequestData($deviceId);
+          HUE_RequestData($deviceId);
         }
       }
     } else {
@@ -275,33 +214,33 @@ class HUEBridge extends IPSModule {
       $sensors = $this->Request('/sensors');
       if ($sensors) {
         foreach ($sensors as $sensorId => $sensor) {
-          if($sensor->type == "ZLLPresence"){
+          if ($sensor->type == "ZLLPresence") {
             // only support ZLLPresence sensor
             $name = utf8_decode((string)$sensor->name);
-	    $uniqueId = (string)$sensor->uniqueid;
-	    // only use first 26 characters as uniqueid
-	    $uniqueId = substr($uniqueId, 0, 26);
-	    echo "Sensor \"$name\" ($sensorId - $uniqueId)\n";
+            $uniqueId = (string)$sensor->uniqueid;
+            // only use first 26 characters as uniqueid
+            $uniqueId = substr($uniqueId, 0, 26);
+            echo "Sensor \"$name\" ($sensorId - $uniqueId)\n";
 
-	    $deviceId = $this->GetDeviceByUniqueIdSensor($uniqueId);
-	    if ($deviceId == 0) {
-	      $deviceId = IPS_CreateInstance($this->SensorGuid());
-	      IPS_SetProperty($deviceId, 'UniqueId', $uniqueId);
+            $deviceId = $this->GetDeviceByUniqueIdSensor($uniqueId);
+            if ($deviceId == 0) {
+              $deviceId = IPS_CreateInstance($this->SensorGuid());
+              IPS_SetProperty($deviceId, 'UniqueId', $uniqueId);
             }
 
-	    IPS_SetParent($deviceId, $sensorsCategoryId);
+            IPS_SetParent($deviceId, $sensorsCategoryId);
 
-	    IPS_SetProperty($deviceId, 'SensorId', (integer)$sensorId);
-	    IPS_SetName($deviceId, $name);
+            IPS_SetProperty($deviceId, 'SensorId', (integer)$sensorId);
+            IPS_SetName($deviceId, $name);
 
-	    // Verbinde Light mit Bridge
-	    if (IPS_GetInstance($deviceId)['ConnectionID'] <> $this->InstanceID) {
+            // Verbinde Light mit Bridge
+            if (IPS_GetInstance($deviceId)['ConnectionID'] <> $this->InstanceID) {
               @IPS_DisconnectInstance($deviceId);
               IPS_ConnectInstance($deviceId, $this->InstanceID);
-	    }
+            }
 
-	    IPS_ApplyChanges($deviceId);
-	    HUE_RequestData($deviceId);
+            IPS_ApplyChanges($deviceId);
+            HUE_RequestData($deviceId);
           }
         }
       }
@@ -322,7 +261,7 @@ class HUEBridge extends IPSModule {
       foreach ($lights as $lightId => $light) {
         $uniqueId = (string)$light->uniqueid;
         $deviceId = $this->GetDeviceByUniqueId($uniqueId);
-        if($deviceId > 0) HUE_ApplyData($deviceId, $light);
+        if ($deviceId > 0) HUE_ApplyData($deviceId, $light);
       }
     }
 
@@ -330,20 +269,20 @@ class HUEBridge extends IPSModule {
     if ($groups) {
       foreach ($groups as $groupId => $group) {
         $deviceId = $this->GetDeviceByGroupId($groupId);
-        if($deviceId > 0) HUEGroup_ApplyData($deviceId, $group);
+        if ($deviceId > 0) HUE_ApplyData($deviceId, $group);
       }
     }
 
     $sensors = $this->Request('/sensors');
     if ($sensors) {
       foreach ($sensors as $sensorId => $sensor) {
-        if($sensor->type == "ZLLPresence" || $sensor->type == "ZLLLightLevel" || $sensor->type == "ZLLTemperature"){
+        if ($sensor->type == 'ZLLPresence' || $sensor->type == 'ZLLLightLevel' || $sensor->type == 'ZLLTemperature') {
           // only support ZLLPresence sensor, also read data from ZLLLightLevel and ZLLTemperature sensors
           $uniqueId = (string)$sensor->uniqueid;
           // only use first 26 characters as uniqueid
           $uniqueId = substr($uniqueId, 0, 26);
           $deviceId = $this->GetDeviceByUniqueIdSensor($uniqueId);
-          if($deviceId > 0) HUE_ApplyData($deviceId, $sensor);
+          if ($deviceId > 0) HUE_ApplyData($deviceId, $sensor);
         }
       }
     }
@@ -356,7 +295,7 @@ class HUEBridge extends IPSModule {
   public function GetDeviceByUniqueId(string $uniqueId) {
     $deviceIds = IPS_GetInstanceListByModuleID($this->LightGuid());
     foreach($deviceIds as $deviceId) {
-      if(IPS_GetProperty($deviceId, 'UniqueId') == $uniqueId) {
+      if (IPS_GetProperty($deviceId, 'UniqueId') == $uniqueId) {
         return $deviceId;
       }
     }
@@ -365,7 +304,7 @@ class HUEBridge extends IPSModule {
   public function GetDeviceByUniqueIdSensor(string $uniqueId) {
     $deviceIds = IPS_GetInstanceListByModuleID($this->SensorGuid());
     foreach($deviceIds as $deviceId) {
-      if(IPS_GetProperty($deviceId, 'UniqueId') == $uniqueId) {
+      if (IPS_GetProperty($deviceId, 'UniqueId') == $uniqueId) {
         return $deviceId;
       }
     }
@@ -374,21 +313,21 @@ class HUEBridge extends IPSModule {
   public function GetDeviceByGroupId(int $groupId) {
     $deviceIds = IPS_GetInstanceListByModuleID($this->GroupGuid());
     foreach($deviceIds as $deviceId) {
-      if(IPS_GetProperty($deviceId, 'GroupId') == $groupId && $this->InstanceID == IPS_GetInstance($deviceId)['ConnectionID']) {
+      if (IPS_GetProperty($deviceId, 'GroupId') == $groupId && $this->InstanceID == IPS_GetInstance($deviceId)['ConnectionID']) {
         return $deviceId;
       }
     }
   }
 
   private function LightGuid() {
-  	return '{729BE8EB-6624-4C6B-B9E5-6E09482A3E36}';
+    return '{729BE8EB-6624-4C6B-B9E5-6E09482A3E36}';
   }
 
   private function GroupGuid() {
-  	return '{C47C8889-02C4-40A2-B18A-DBD9E47CE23D}';
+    return '{C47C8889-02C4-40A2-B18A-DBD9E47CE23D}';
   }
 
   private function SensorGuid() {
-  	return '{C0D95A01-1891-4953-A3B3-779678E9C955}';
+    return '{C0D95A01-1891-4953-A3B3-779678E9C955}';
   }
 }

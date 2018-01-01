@@ -42,7 +42,6 @@ Die Einrichtung erfolgt über die Modulverwaltung von Symcon. Nach der Installat
 
 	// Anpassung eines Lampenparameter (siehe SetValues)
 	HUE_SetValue($lightId, $key, $value);
-	HUEGroup_SetValue($groupId, $key, $value);
 
 	// Anpassung mehrere Lampenparameter
 	// array('KEY1' => 'VALUE1', 'KEY2' => 'VALUE2'...)
@@ -57,11 +56,9 @@ Die Einrichtung erfolgt über die Modulverwaltung von Symcon. Nach der Installat
 	// EFFECT -> Wird durchgereicht
 	// TRANSITIONTIME -> Wird durchgereicht
 	HUE_SetValues($lightId, $list);
-	HUEGroup_SetValues($groupId, $list);
 
 	// Liefert einen Lampenparameter (siehe HUE_SetValue)
 	HUE_GetValue($lightId, $key);
-	HUEGroup_GetValue($groupId, $key);
 	
 	// Weitere Helpergunktionen für Direktverknüpfungen
 	HUE_SetState($lightId, $value)
@@ -70,9 +67,3 @@ Die Einrichtung erfolgt über die Modulverwaltung von Symcon. Nach der Installat
 	HUE_GetColor($lightId)
 	HUE_SetBrightness($lightId, $value)
 	HUE_GetBrightness($lightId)
-	HUEGroup_SetState($groupId, $value)
-	HUEGroup_GetState($groupId)
-	HUEGroup_SetColor($groupId, $value)
-	HUEGroup_GetColor($groupId)
-	HUEGroup_SetBrightness($groupId, $value)
-	HUEGroup_GetBrightness($groupId)

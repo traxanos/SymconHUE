@@ -24,7 +24,7 @@
     {
       "type": "Button",
       "label": "Status neu einlesen",
-      "onClick": "HUEGroup_RequestData($id);"
+      "onClick": "HUE_RequestData($id);"
     }
   ],
   "status": [
