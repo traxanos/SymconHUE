@@ -7,5 +7,5 @@
   "parentRequirements": [ "{D792637E-79F8-4EB0-ABC4-A641C2F4CC3B}" ],
   "childRequirements": [],
   "implemented": [ "{0046C3E1-28E6-40CF-9358-4C992F58F9EE}" ],
-  "prefix": "HUE"
+  "prefix": "HUESensor"
 }
