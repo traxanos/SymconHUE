@@ -109,7 +109,7 @@ abstract class HUEDevice extends IPSModule {
       } elseif (isset($values['ct']) && (isset($values['hue']) || in_array(@$values['colormode'], array('hs', 'xy')))) {
         // HUE+CT Lamp
         $lightFeature = 0;
-      } elseif(isset($values['hue']) || in_aray(@$values['colormode'], array('hs', 'xy'))) {
+      } elseif(isset($values['hue']) || in_array(@$values['colormode'], array('hs', 'xy'))) {
         // HUE Lamp
         $lightFeature = 1;
       } elseif(isset($values['ct'])) {
@@ -245,10 +245,10 @@ abstract class HUEDevice extends IPSModule {
         SetValueBoolean($valuesId, $values['on']);
       }
 
-      if (@$briId) SetValueInteger($briId, $values['bri']);
-      if (@$satId) SetValueInteger($satId, $values['sat']);
-      if (@$hueId) SetValueInteger($hueId, $values['hue']);
-      if (@$ctId) SetValueInteger($ctId, $values['ct']);
+      if (@$briId) SetValueInteger($briId, (int)@$values['bri']);
+      if (@$satId) SetValueInteger($satId, (int)@$values['sat']);
+      if (@$hueId) SetValueInteger($hueId, (int)@$values['hue']);
+      if (@$ctId) SetValueInteger($ctId, (int)@$values['ct']);
 
       switch (@$values['colormode']) {
         case 'xy':
