@@ -106,10 +106,10 @@ abstract class HUEDevice extends IPSModule {
       if (!isset($values['bri'])) {
         // Keine Helligkeit, somit keine Licht-Funktionen
         $lightFeature = 4;
-      } elseif (isset($values['ct']) && isset($values['hue'])) {
+      } elseif (isset($values['ct']) && (isset($values['hue']) || in_aray(@$values['colormode'], array('hs', 'xy')))) {
         // HUE+CT Lamp
         $lightFeature = 0;
-      } elseif(isset($values['hue'])) {
+      } elseif(isset($values['hue']) || in_aray(@$values['colormode'], array('hs', 'xy'))) {
         // HUE Lamp
         $lightFeature = 1;
       } elseif(isset($values['ct'])) {
