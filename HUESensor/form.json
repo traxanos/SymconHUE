@@ -1,39 +1,58 @@
 {
-  "elements": [
+  "elements": [{
+    "type": "ValidationTextBox",
+    "name": "UniqueId",
+    "caption": "Unique ID"
+  }, {
+    "type": "NumberSpinner",
+    "name": "SensorId",
+    "caption": "Sensor"
+  }, {
+    "type": "Label",
+    "label": "Die nachfolgenden Werte, werden automatisch aktualisiert bei \"Status neu einlesen.\""
+  }, {
+    "type": "ValidationTextBox",
+    "name": "ModelId",
+    "caption": "Model"
+  }, {
+    "type": "ValidationTextBox",
+    "name": "Type",
+    "caption": "Typ"
+  }],
+  "actions": [{
+    "type": "Button",
+    "label": "Status neu einlesen",
+    "onClick": "HUE_RequestData($id);"
+  }],
+  "status": [{
+      "code": 101,
+      "icon": "active",
+      "caption": "Sensor wird erstellt."
+    },
     {
-      "type": "ValidationTextBox",
-      "name": "UniqueId",
-      "caption": "Unique ID"
-    }, {
-      "type": "NumberSpinner",
-      "name": "SensorId",
-      "caption": "Sensor"
-    }, {
-      "type": "Label",
-      "label": "Die nachfolgenden Werte, werden automatisch aktualisiert bei \"Status neu einlesen.\""
-    }, {
-      "type": "ValidationTextBox",
-      "name": "ModelId",
-      "caption": "Model"
-    }, {
-      "type": "ValidationTextBox",
-      "name": "Type",
-      "caption": "Typ"
-    }
-  ],
-  "actions": [
+      "code": 102,
+      "icon": "active",
+      "caption": "Sensor ist aktiv."
+    },
     {
-      "type": "Button",
-      "label": "Status neu einlesen",
-      "onClick": "HUE_RequestData($id);"
+      "code": 103,
+      "icon": "active",
+      "caption": "Sensor wird gelöscht."
+    },
+    {
+      "code": 104,
+      "icon": "inactive",
+      "caption": "Bitte die Sensor über die Bridge anlegen lassen."
+    },
+    {
+      "code": 201,
+      "icon": "error",
+      "caption": "Die Sensor ist nicht erreichbar."
+    },
+    {
+      "code": 202,
+      "icon": "error",
+      "caption": "Es ist ein unbekannter Fehler aufgetreten."
     }
-  ],
-  "status": [
-    { "code": 101, "icon": "active", "caption": "Sensor wird erstellt." },
-    { "code": 102, "icon": "active", "caption": "Sensor ist aktiv." },
-    { "code": 103, "icon": "active", "caption": "Sensor wird gelöscht." },
-    { "code": 104, "icon": "inactive", "caption": "Bitte die Sensor über die Bridge anlegen lassen." },
-    { "code": 201, "icon": "error", "caption": "Die Sensor ist nicht erreichbar." },
-    { "code": 202, "icon": "error", "caption": "Es ist ein unbekannter Fehler aufgetreten." }
   ]
 }

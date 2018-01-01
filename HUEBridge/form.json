@@ -1,25 +1,90 @@
 {
-  "elements": [
-    { "name": "Host", "type": "ValidationTextBox", "caption": "Host" },
-    { "name": "User", "type": "ValidationTextBox", "caption": "User" },
-    { "name": "UpdateInterval", "type": "IntervalBox", "caption": "Sekunden" },
-    { "name": "LightsCategory", "type": "SelectCategory", "caption": "Lampenkategorie" },
-    { "name": "GroupsCategory", "type": "SelectCategory", "caption": "Gruppenkategorie" },
-    { "name": "SensorsCategory", "type": "SelectCategory", "caption": "Sensorenkategorie" }
+  "elements": [{
+      "name": "Host",
+      "type": "ValidationTextBox",
+      "caption": "Host"
+    },
+    {
+      "name": "User",
+      "type": "ValidationTextBox",
+      "caption": "User"
+    },
+    {
+      "name": "UpdateInterval",
+      "type": "IntervalBox",
+      "caption": "Sekunden"
+    },
+    {
+      "name": "LightsCategory",
+      "type": "SelectCategory",
+      "caption": "Lampenkategorie"
+    },
+    {
+      "name": "GroupsCategory",
+      "type": "SelectCategory",
+      "caption": "Gruppenkategorie"
+    },
+    {
+      "name": "SensorsCategory",
+      "type": "SelectCategory",
+      "caption": "Sensorenkategorie"
+    }
   ],
-  "actions": [
-    { "type": "Button", "label": "Geräte abgleichen", "onClick": "HUE_SyncDevices($id);" },
-    { "type": "Button", "label": "User registrieren", "onClick": "HUE_RegisterUser($id);" },
-    { "type": "Button", "label": "Status abgleichen", "onClick": "HUE_SyncStates($id); echo 'Fertig';" }
+  "actions": [{
+      "type": "Button",
+      "label": "Geräte abgleichen",
+      "onClick": "HUE_SyncDevices($id);"
+    },
+    {
+      "type": "Button",
+      "label": "User registrieren",
+      "onClick": "HUE_RegisterUser($id);"
+    },
+    {
+      "type": "Button",
+      "label": "Status abgleichen",
+      "onClick": "HUE_SyncStates($id); echo 'Fertig';"
+    }
   ],
-  "status": [
-    { "code": 101, "icon": "active", "caption": "Bridge wird erstellt." },
-    { "code": 102, "icon": "active", "caption": "Bridge is aktiv." },
-    { "code": 103, "icon": "active", "caption": "Bridge wird gelöscht." },
-    { "code": 104, "icon": "inactive", "caption": "Bitte alle Konfigurationsparameter eintragen." },
-    { "code": 201, "icon": "error", "caption": "User ist nicht registriert." },
-    { "code": 202, "icon": "error", "caption": "User konnte nicht registriert werden. Bitte drücken Sie den Knopf auf dem Bridge beim Registrieren." },
-    { "code": 203, "icon": "error", "caption": "Bridge ist nicht erreichbar." },
-    { "code": 299, "icon": "error", "caption": "Unbekannter Fehler aufgetreten." }
+  "status": [{
+      "code": 101,
+      "icon": "active",
+      "caption": "Bridge wird erstellt."
+    },
+    {
+      "code": 102,
+      "icon": "active",
+      "caption": "Bridge is aktiv."
+    },
+    {
+      "code": 103,
+      "icon": "active",
+      "caption": "Bridge wird gelöscht."
+    },
+    {
+      "code": 104,
+      "icon": "inactive",
+      "caption": "Bitte alle Konfigurationsparameter eintragen."
+    },
+    {
+      "code": 201,
+      "icon": "error",
+      "caption": "User ist nicht registriert."
+    },
+    {
+      "code": 202,
+      "icon": "error",
+      "caption": "User konnte nicht registriert werden. Bitte drücken Sie den Knopf auf dem Bridge beim Registrieren."
+    },
+    {
+      "code": 203,
+      "icon": "error",
+      "caption": "Bridge ist nicht erreichbar."
+    },
+    {
+      "code": 299,
+      "icon": "error",
+      "caption": "Unbekannter Fehler aufgetreten."
+    }
   ]
 }
