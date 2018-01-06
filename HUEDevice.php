@@ -268,41 +268,47 @@ abstract class HUEDevice extends IPSModule
             if (@$briId) {
                 SetValueInteger($briId, (int)@$values['bri']);
             }
-            if (@$satId) {
+            if (@$satId && in_array($lightFeature, [0, 1])) {
                 SetValueInteger($satId, (int)@$values['sat']);
             }
-            if (@$hueId) {
+            if (@$hueId && in_array($lightFeature, [0, 1])) {
                 SetValueInteger($hueId, (int)@$values['hue']);
             }
-            if (@$ctId) {
+            if (@$ctId && in_array($lightFeature, [0, 2])) {
                 SetValueInteger($ctId, (int)@$values['ct']);
             }
 
-            switch (@$values['colormode']) {
-        case 'xy':
-        case 'hs':
-          $hex = $this->HSV2HEX($values['hue'], $values['sat'], $values['bri']);
-          SetValueInteger($colorId, hexdec($hex));
-          IPS_SetHidden($colorId, false);
-          IPS_SetHidden($satId, false);
-          if (@$ctId) {
-              IPS_SetHidden($ctId, true);
-          }
-          if (@$cmId) {
-              SetValueInteger($cmId, 0);
-          }
-          break;
-        case 'ct':
-          if (@$colorId) {
-              IPS_SetHidden($colorId, true);
-          }
-          if (@$satId) {
-              IPS_SetHidden($satId, true);
-          }
-          IPS_SetHidden($ctId, false);
-          SetValueInteger($cmId, 1);
-          break;
-      }
+            // Fix colormode for non philips hue lamps
+            $colormode = @$values['colormode'];
+            if (in_array($colormode, ['hs', 'xy']) && in_array($lightFeature, [0, 1])) {
+                $colormode = 'hs';
+            } elseif ($colormode == 'ct' && in_array($lightFeature, [0, 2])) {
+                $colormode = 'ct';
+            } else {
+                $colormode = '';
+            }
+
+            if ($colormode == 'hs' && isset($values['hue']) && isset($values['sat']) && isset($values['bri'])) {
+                $hex = $this->HSV2HEX($values['hue'], $values['sat'], $values['bri']);
+                SetValueInteger($colorId, hexdec($hex));
+                IPS_SetHidden($colorId, false);
+                IPS_SetHidden($satId, false);
+                if (@$ctId) {
+                    IPS_SetHidden($ctId, true);
+                }
+                if (@$cmId) {
+                    SetValueInteger($cmId, 0);
+                }
+            } elseif ($colormode == 'ct') {
+                if (@$colorId) {
+                    IPS_SetHidden($colorId, true);
+                }
+                if (@$satId) {
+                    IPS_SetHidden($satId, true);
+                }
+                IPS_SetHidden($ctId, false);
+                SetValueInteger($cmId, 1);
+            }
         } elseif (get_class($this) == 'HUESensor') {
             if (@$presenceId && isset($values_state['presence'])) {
                 SetValueBoolean($presenceId, $values_state['presence']);
