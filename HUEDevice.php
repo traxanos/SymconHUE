@@ -167,7 +167,7 @@ abstract class HUEDevice extends IPSModule
                 $this->EnableAction("BRIGHTNESS");
                 $briId = $this->GetIDForIdent("BRIGHTNESS");
             } else {
-                $this->MaintainVariable("BRIGHTNESS", "Helligkeit", 1, "Intensity.Hue", 5, false);
+                $this->UnregisterVariable("BRIGHTNESS");
             }
 
             if ($lightFeature == 0 || $lightFeature == 1) {
@@ -175,7 +175,7 @@ abstract class HUEDevice extends IPSModule
                 $hueId = $this->GetIDForIdent("HUE");
                 IPS_SetHidden($hueId, true);
             } else {
-                $this->MaintainVariable("HUE", "Hue", 1, "", 1000, false);
+                $this->UnregisterVariable("HUE");
             }
 
             if ($lightFeature == 0 || $lightFeature == 2) {
@@ -183,7 +183,7 @@ abstract class HUEDevice extends IPSModule
                 $this->EnableAction("COLOR_TEMPERATURE");
                 $ctId = $this->GetIDForIdent("COLOR_TEMPERATURE");
             } else {
-                $this->MaintainVariable("COLOR_TEMPERATURE", "Farbtemperatur", 1, "ColorTemperatureSelect.Hue", 4, false);
+                $this->UnregisterVariable("COLOR_TEMPERATURE");
             }
 
             if ($lightFeature == 0 || $lightFeature == 1) {
@@ -196,8 +196,8 @@ abstract class HUEDevice extends IPSModule
                 $this->EnableAction("SATURATION");
                 $satId = $this->GetIDForIdent("SATURATION");
             } else {
-                $this->MaintainVariable("COLOR", "Farbe", 1, "~HexColor", 3, false);
-                $this->MaintainVariable("SATURATION", utf8_decode("Sättigung"), 1, "Intensity.Hue", 6, false);
+                $this->UnregisterVariable("COLOR");
+                $this->UnregisterVariable("SATURATION");
             }
         } elseif (get_class($this) == 'HUESensor') {
             $this->MaintainVariable("PRESENCE", "Anwesenheit", 0, "~Presence", 1, true);
