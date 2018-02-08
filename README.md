@@ -49,8 +49,8 @@ Die Einrichtung erfolgt über die Modulverwaltung von Symcon. Nach der Installat
 	// Mögliche Keys:
 	// STATE -> true oder false für an/aus
 	// COLOR_TEMPERATURE -> Farbtemperatur (153 bis 500)
-	// SATURATION -> Sättigung (0 bis 255)
-	// BRIGHTNESS -> Helligkeit in (0 bis 255)
+	// SATURATION -> Sättigung (0 bis 254)
+	// BRIGHTNESS -> Helligkeit in (0 bis 254)
 	// COLOR -> Farbe als integer
 	// ALERT -> Wird durchgereicht
 	// EFFECT -> Wird durchgereicht

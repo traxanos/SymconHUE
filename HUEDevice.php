@@ -14,14 +14,23 @@ abstract class HUEDevice extends IPSModule
         }
         IPS_SetVariableProfileAssociation('ColorModeSelect.Hue', 0, 'Farbe', '', 0x000000);
         IPS_SetVariableProfileAssociation('ColorModeSelect.Hue', 1, 'Farbtemperatur', '', 0x000000);
+        IPS_SetVariableProfileIcon('ColorModeSelect.Hue', 'ArrowRight');
 
         if (!IPS_VariableProfileExists('ColorTemperatureSelect.Hue')) {
             IPS_CreateVariableProfile('ColorTemperatureSelect.Hue', 1);
         }
         IPS_SetVariableProfileDigits('ColorTemperatureSelect.Hue', 0);
-        IPS_SetVariableProfileIcon('ColorTemperatureSelect.Hue', 'Intensity');
+        IPS_SetVariableProfileIcon('ColorTemperatureSelect.Hue', 'Bulb');
         IPS_SetVariableProfileText('ColorTemperatureSelect.Hue', '', ' Mired');
         IPS_SetVariableProfileValues('ColorTemperatureSelect.Hue', 153, 500, 1);
+
+        if (!IPS_VariableProfileExists('Intensity.Hue')) {
+            IPS_CreateVariableProfile('Intensity.Hue', 1);
+        }
+        IPS_SetVariableProfileDigits('Intensity.Hue', 0);
+        IPS_SetVariableProfileIcon('Intensity.Hue', 'Intensity');
+        IPS_SetVariableProfileText('Intensity.Hue', '', '%');
+        IPS_SetVariableProfileValues('Intensity.Hue', 0, 254, 1);
 
         parent::Create();
     }
@@ -144,118 +153,64 @@ abstract class HUEDevice extends IPSModule
          */
 
         if (get_class($this) == 'HUELight' || get_class($this) == 'HUEGroup') {
-            if (!$valuesId = @$this->GetIDForIdent("STATE")) {
-                $valuesId = $this->RegisterVariableBoolean("STATE", "Zustand", "~Switch", 1);
-                $this->EnableAction("STATE");
-                //IPS_SetPosition($valuesId, 1);
-            }
+            $this->MaintainVariable("STATE", "Zustand", 0, "~Switch", 1, true);
+            $this->EnableAction("STATE");
+            $valuesId = $this->GetIDForIdent("STATE");
 
-            if (!$cmId = @$this->GetIDForIdent("COLOR_MODE")) {
-                $cmId = $this->RegisterVariableInteger("COLOR_MODE", "Modus", "ColorModeSelect.Hue", 2);
-                $this->EnableAction("COLOR_MODE");
-                //IPS_SetPosition($cmId, 2);
-                IPS_SetIcon($cmId, 'ArrowRight');
-            }
+            $this->MaintainVariable("COLOR_MODE", "Modus", 1, "ColorModeSelect.Hue", 2, true);
+            $this->EnableAction("COLOR_MODE");
+            $cmId = $this->GetIDForIdent("COLOR_MODE");
+            IPS_SetHidden($cmId, $lightFeature != 0);
 
             if ($lightFeature != 4) {
-                if (!$briId = @$this->GetIDForIdent("BRIGHTNESS")) {
-                    $briId = $this->RegisterVariableInteger("BRIGHTNESS", "Helligkeit", "~Intensity.255", 5);
-                    $this->EnableAction("BRIGHTNESS");
-                    IPS_SetIcon($briId, 'Sun');
-                    //IPS_SetPosition($briId, 5);
-                }
+                $this->MaintainVariable("BRIGHTNESS", "Helligkeit", 1, "Intensity.Hue", 5, true);
+                $this->EnableAction("BRIGHTNESS");
+                $briId = $this->GetIDForIdent("BRIGHTNESS");
             } else {
-                $delete = @IPS_GetObjectIDByIdent("BRIGHTNESS", $this->InstanceID);
-                if ($delete !== false) {
-                    IPS_DeleteVariable($delete);
-                }
+                $this->MaintainVariable("BRIGHTNESS", "Helligkeit", 1, "Intensity.Hue", 5, false);
             }
 
             if ($lightFeature == 0 || $lightFeature == 1) {
-                if (!$hueId = @$this->GetIDForIdent("HUE")) {
-                    $hueId = $this->RegisterVariableInteger("HUE", "Hue");
-                    IPS_SetHidden($hueId, true);
-                }
+                $this->MaintainVariable("HUE", "Hue", 1, "", 1000, true);
+                $hueId = $this->GetIDForIdent("HUE");
+                IPS_SetHidden($hueId, true);
             } else {
-                $delete = @IPS_GetObjectIDByIdent("HUE", $this->InstanceID);
-                if ($delete !== false) {
-                    IPS_DeleteVariable($delete);
-                }
-            }
-
-            if ($lightFeature == 0) {
-                IPS_SetVariableCustomProfile($cmId, 'ColorModeSelect.Hue');
-                IPS_SetHidden($cmId, false);
-            } else {
-                IPS_SetHidden($cmId, true);
+                $this->MaintainVariable("HUE", "Hue", 1, "", 1000, false);
             }
 
             if ($lightFeature == 0 || $lightFeature == 2) {
-                if (!$ctId = @$this->GetIDForIdent("COLOR_TEMPERATURE")) {
-                    $ctId = $this->RegisterVariableInteger("COLOR_TEMPERATURE", "Farbtemperatur", "ColorTemperatureSelect.Hue", 4);
-                    $this->EnableAction("COLOR_TEMPERATURE");
-                    IPS_SetIcon($ctId, 'Bulb');
-                    //IPS_SetPosition($ctId, 4);
-                }
+                $this->MaintainVariable("COLOR_TEMPERATURE", "Farbtemperatur", 1, "ColorTemperatureSelect.Hue", 4, true);
+                $this->EnableAction("COLOR_TEMPERATURE");
+                $ctId = $this->GetIDForIdent("COLOR_TEMPERATURE");
             } else {
-                $delete = @IPS_GetObjectIDByIdent("COLOR_TEMPERATURE", $this->InstanceID);
-                if ($delete !== false) {
-                    IPS_DeleteVariable($delete);
-                }
+                $this->MaintainVariable("COLOR_TEMPERATURE", "Farbtemperatur", 1, "ColorTemperatureSelect.Hue", 4, false);
             }
 
             if ($lightFeature == 0 || $lightFeature == 1) {
-                if (!$colorId = @$this->GetIDForIdent("COLOR")) {
-                    $colorId = $this->RegisterVariableInteger("COLOR", "Farbe", "~HexColor", 3);
-                    $this->EnableAction("COLOR");
-                    //IPS_SetPosition($colorId, 3);
-                    IPS_SetIcon($colorId, 'Bulb');
-                }
+                $this->MaintainVariable("COLOR", "Farbe", 1, "~HexColor", 3, true);
+                $this->EnableAction("COLOR");
+                $colorId = $this->GetIDForIdent("COLOR");
+                IPS_SetHidden($colorId, true);
 
-                if (!$satId = @$this->GetIDForIdent("SATURATION")) {
-                    $satId = $this->RegisterVariableInteger("SATURATION", utf8_decode("Sättigung"), "~Intensity.255", 6);
-                    $this->EnableAction("SATURATION");
-                    IPS_SetIcon($satId, 'Intensity');
-                    //IPS_SetPosition($satId, 6);
-                }
+                $this->MaintainVariable("SATURATION", utf8_decode("Sättigung"), 1, "Intensity.Hue", 6, true);
+                $this->EnableAction("SATURATION");
+                $satId = $this->GetIDForIdent("SATURATION");
             } else {
-                $delete = @IPS_GetObjectIDByIdent("COLOR", $this->InstanceID);
-                if ($delete !== false) {
-                    IPS_DeleteVariable($delete);
-                }
-                $delete = @IPS_GetObjectIDByIdent("SATURATION", $this->InstanceID);
-                if ($delete !== false) {
-                    IPS_DeleteVariable($delete);
-                }
+                $this->MaintainVariable("COLOR", "Farbe", 1, "~HexColor", 3, false);
+                $this->MaintainVariable("SATURATION", utf8_decode("Sättigung"), 1, "Intensity.Hue", 6, false);
             }
         } elseif (get_class($this) == 'HUESensor') {
-            if (!$presenceId = @$this->GetIDForIdent("PRESENCE")) {
-                $presenceId = $this->RegisterVariableBoolean("PRESENCE", "Anwesenheit", "~Presence", 1);
-                //$this->EnableAction("PRESENCE");
-                IPS_SetIcon($presenceId, 'Motion');
-                //IPS_SetPosition($valuesId, 1);
-            }
+            $this->MaintainVariable("PRESENCE", "Anwesenheit", 0, "~Presence", 1, true);
+            $presenceId = $this->GetIDForIdent("PRESENCE");
 
-            if (!$temperatureId = @$this->GetIDForIdent("TEMPERATURE")) {
-                $temperatureId = $this->RegisterVariableFloat("TEMPERATURE", "Temperatur", "~Temperature", 2);
-                //$this->EnableAction("TEMPERATURE");
-                IPS_SetIcon($temperatureId, 'Temperature');
-                //IPS_SetPosition($valuesId, 1);
-            }
+            $this->MaintainVariable("TEMPERATURE", "Temperatur", 2, "~Temperature", 2, true);
+            $temperatureId = $this->GetIDForIdent("TEMPERATURE");
 
-            if (!$illuminationId = @$this->GetIDForIdent("ILLUMINATION")) {
-                $illuminationId = $this->RegisterVariableFloat("ILLUMINATION", "Erleuchtung", "~Illumination.F", 3);
-                //$this->EnableAction("ILLUMINATION");
-                IPS_SetIcon($illuminationId, 'Sun');
-                //IPS_SetPosition($valuesId, 1);
-            }
+            $this->MaintainVariable("ILLUMINATION", "Erleuchtung", 2, "~Illumination.F", 3, true);
+            $illuminationId = $this->GetIDForIdent("ILLUMINATION");
 
-            if (!$batteryId = @$this->GetIDForIdent("BATTERY")) {
-                $batteryId = $this->RegisterVariableInteger("BATTERY", "Batterie", "~Battery.100", 4);
-                //$this->EnableAction("BATTERY");
-                IPS_SetIcon($batteryId, 'Battery');
-                //IPS_SetPosition($valuesId, 1);
-            }
+            $this->MaintainVariable("BATTERY", "Batterie", 1, "~Battery.100", 4, true);
+            $batteryId = $this->GetIDForIdent("BATTERY");
         }
 
         if (get_class($this) == 'HUELight' || get_class($this) == 'HUEGroup') {
@@ -345,25 +300,20 @@ abstract class HUEDevice extends IPSModule
     public function RequestAction($key, $value)
     {
         switch ($key) {
-      case 'STATE':
-         $value = $value == 1;
-         break;
-      case 'COLOR_TEMPERATURE':
-        $value = $value;
-        break;
-      case 'SATURATION':
-      case 'BRIGHTNESS':
-         $value = $value;
-         break;
-      case 'PRESENCE':
-          $value = $value == 1;
-          break;
-      case 'TEMPERATURE':
-      case 'ILLUMINATION':
-      case 'BATTERY':
-          $value = $value;
-          break;
-    }
+        case 'STATE':
+        case 'PRESENCE':
+            $value = $value == 1;
+            break;
+        case 'HUE':
+        case 'COLOR_TEMPERATURE':
+        case 'SATURATION':
+        case 'BRIGHTNESS':
+        case 'TEMPERATURE':
+        case 'ILLUMINATION':
+        case 'BATTERY':
+            $value = $value;
+            break;
+        }
         $this->SetValue($key, $value);
     }
 
@@ -374,10 +324,10 @@ abstract class HUEDevice extends IPSModule
     public function GetValue(string $key)
     {
         switch ($key) {
-      default:
-        $value = GetValue(@IPS_GetObjectIDByIdent($key, $this->InstanceID));
-        break;
-    }
+        default:
+            $value = GetValue(@IPS_GetObjectIDByIdent($key, $this->InstanceID));
+            break;
+        }
         return $value;
     }
 
@@ -387,11 +337,7 @@ abstract class HUEDevice extends IPSModule
      */
     public function SetValue($key, $value)
     {
-        $list = array($key => $value);
-        if (in_array($key, array('COLOR', 'BRIGHTNESS', 'SATURATION'))) {
-            $list['STATE'] = true;
-        }
-        return $this->SetValues($list);
+        return $this->SetValues(array($key => $value));
     }
 
     /*
@@ -399,7 +345,7 @@ abstract class HUEDevice extends IPSModule
      */
     public function SetState(bool $value)
     {
-        return $this->SetValues(array('STATE' => $value));
+        return $this->SetValue('STATE', $value);
     }
 
     /*
@@ -415,7 +361,7 @@ abstract class HUEDevice extends IPSModule
      */
     public function SetColor(int $value)
     {
-        return $this->SetValues(array('STATE' => true, 'COLOR_MODE' => 0, 'COLOR' => $value));
+        return $this->SetValue('COLOR', $value);
     }
 
     /*
@@ -431,7 +377,7 @@ abstract class HUEDevice extends IPSModule
      */
     public function SetBrightness(int $value)
     {
-        return $this->SetValues(array('STATE' => true, 'BRIGHTNESS' => $value));
+        return $this->SetValue('BRIGHTNESS', $value);
     }
 
     /*
@@ -478,74 +424,84 @@ abstract class HUEDevice extends IPSModule
 
         foreach ($list as $key => $value) {
             switch ($key) {
-        case 'STATE':
-          $stateNewValue = $value;
-          break;
-        case 'EFFECT':
-          $effect = $value;
-          break;
-        case 'TRANSITIONTIME':
-          $transitiontime = $value;
-          break;
-        case 'ALERT':
-          $alert = $value;
-          break;
-        case 'COLOR':
-          $colorNewValue = $value;
-          $hex = str_pad(dechex($value), 6, 0, STR_PAD_LEFT);
-          $hsv = $this->HEX2HSV($hex);
-          SetValueInteger($colorId, $value);
-          $hueNewValue = $hsv['h'];
-          $briNewValue = $hsv['v'];
-          $satNewValue = $hsv['s'];
-          $cmNewValue = 0;
-          break;
-        case 'BRIGHTNESS':
-          $briNewValue = $value;
-          if (IPS_GetProperty($this->InstanceID, 'LightFeatures') != 3) {
-              if ($cmValue == '0') {
-                  $newHex = $this->HSV2HEX($hueValue, $satValue, $briNewValue);
-                  SetValueInteger($colorId, hexdec($newHex));
-                  $hueNewValue = $hueValue;
-                  $satNewValue = $satValue;
-              } else {
-                  $ctNewValue = $ctValue;
-              }
-          }
-          break;
-        case 'SATURATION':
-          $cmNewValue = 0;
-          $satNewValue = $value;
-          $newHex = $this->HSV2HEX($hueValue, $satNewValue, $briValue);
-          SetValueInteger($colorId, hexdec($newHex));
-          $hueNewValue = $hueValue;
-          $briNewValue = $briValue;
-          break;
-        case 'COLOR_TEMPERATURE':
-          $cmNewValue = 1;
-          $ctNewValue = $value;
-          $briNewValue = $briValue;
-          break;
-        case 'COLOR_MODE':
-          $cmNewValue = $value;
-          $stateNewValue = true;
-          if ($cmNewValue == 1) {
-              $ctNewValue = $ctValue;
-              IPS_SetHidden($colorId, true);
-              IPS_SetHidden($ctId, false);
-              IPS_SetHidden($satId, true);
-          } else {
-              $hueNewValue = $hueValue;
-              $satNewValue = $satValue;
-              $briNewValue = $briValue;
-              $newHex = $this->HSV2HEX($hueValue, $satValue, $briValue);
-              SetValueInteger($colorId, hexdec($newHex));
-              IPS_SetHidden($colorId, false);
-              IPS_SetHidden($ctId, true);
-              IPS_SetHidden($satId, false);
-          }
-          break;
-      }
+            case 'STATE':
+                $stateNewValue = $value;
+                break;
+            case 'EFFECT':
+                $effect = $value;
+                break;
+            case 'TRANSITIONTIME':
+                $transitiontime = $value;
+                break;
+            case 'ALERT':
+                $alert = $value;
+                break;
+            case 'HUE':
+                $hueNewValue = $value;
+                break;
+            case 'COLOR':
+                $colorNewValue = $value;
+                $hex = str_pad(dechex($value), 6, 0, STR_PAD_LEFT);
+                $hsv = $this->HEX2HSV($hex);
+                SetValueInteger($colorId, $value);
+                $hueNewValue = $hsv['h'];
+                $briNewValue = $hsv['v'];
+                $satNewValue = $hsv['s'];
+                $cmNewValue = 0;
+                break;
+            case 'BRIGHTNESS':
+                $briNewValue = $value;
+                if (IPS_GetProperty($this->InstanceID, 'LightFeatures') != 3) {
+                    if ($cmValue == '0') {
+                        $newHex = $this->HSV2HEX($hueValue, $satValue, $briNewValue);
+                        SetValueInteger($colorId, hexdec($newHex));
+                        $hueNewValue = $hueValue;
+                        $satNewValue = $satValue;
+                    } else {
+                        $ctNewValue = $ctValue;
+                    }
+                }
+                break;
+            case 'SATURATION':
+                $cmNewValue = 0;
+                $satNewValue = $value;
+                $newHex = $this->HSV2HEX($hueValue, $satNewValue, $briValue);
+                SetValueInteger($colorId, hexdec($newHex));
+                $hueNewValue = $hueValue;
+                $briNewValue = $briValue;
+                break;
+            case 'COLOR_TEMPERATURE':
+                $cmNewValue = 1;
+                $ctNewValue = $value;
+                $briNewValue = $briValue;
+                break;
+            case 'COLOR_MODE':
+                $cmNewValue = $value;
+                if ($cmNewValue == 1) {
+                    $ctNewValue = $ctValue;
+                    IPS_SetHidden($colorId, true);
+                    IPS_SetHidden($ctId, false);
+                    IPS_SetHidden($satId, true);
+                } else {
+                    $hueNewValue = $hueValue;
+                    $satNewValue = $satValue;
+                    $briNewValue = $briValue;
+                    $newHex = $this->HSV2HEX($hueValue, $satValue, $briValue);
+                    SetValueInteger($colorId, hexdec($newHex));
+                    IPS_SetHidden($colorId, false);
+                    IPS_SetHidden($ctId, true);
+                    IPS_SetHidden($satId, false);
+                }
+                break;
+            }
+        }
+
+        // auto parameter
+        if (isset($satNewValue) || isset($hueNewValue) || isset($ctNewValue)) {
+            $stateNewValue = true;
+        }
+        if (isset($briNewValue)) {
+            $stateNewValue = ($briNewValue > 0);
         }
 
         $changes = array();
@@ -589,7 +545,7 @@ abstract class HUEDevice extends IPSModule
             $path = $this->BasePath() . "/state";
         }
 
-//    print_r($changes);
+        //    print_r($changes);
         return HUE_Request($this->GetBridge(), $path, $changes);
     }
 
@@ -627,11 +583,11 @@ abstract class HUEDevice extends IPSModule
         $maxRGB = max($r, $g, $b);
         $minRGB = min($r, $g, $b);
         $chroma = $maxRGB - $minRGB;
-        $v = $maxRGB * 255;
+        $v = $maxRGB * 254;
         if ($chroma == 0) {
-            return array('h' => 0, 's' => 0, 'v' => $v);
+            return array('h' => 0, 's' => 0, 'v' => round($v));
         }
-        $s = ($chroma / $maxRGB) * 255;
+        $s = ($chroma / $maxRGB) * 254;
         if ($r == $minRGB) {
             $h = 3 - (($g - $b) / $chroma);
         } elseif ($b == $minRGB) {
@@ -648,44 +604,45 @@ abstract class HUEDevice extends IPSModule
         if (!($h >= 0 && $h <= (21845*3))) {
             throw new Exception("h property must be between 0 and 65535, but is: ${h}");
         }
-        if (!($s >= 0 && $s <= 255)) {
+        if (!($s >= 0 && $s <= 254)) {
             throw new Exception("s property must be between 0 and 254, but is: ${s}");
         }
-        if (!($v >= 0 && $v <= 255)) {
+        if (!($v >= 0 && $v <= 254)) {
             throw new Exception("v property must be between 0 and 254, but is: ${v}");
         }
         $h = $h * 6 / (21845*3);
-        $s = $s / 255;
-        $v = $v / 255;
+        $s = $s / 254;
+        $v = $v / 254;
         $i = floor($h);
         $f = $h - $i;
         $m = $v * (1 - $s);
         $n = $v * (1 - $s * $f);
         $k = $v * (1 - $s * (1 - $f));
         switch ($i) {
-      case 0:
-        list($r, $g, $b) = array($v, $k, $m);
-        break;
-      case 1:
-        list($r, $g, $b) = array($n, $v, $m);
-        break;
-      case 2:
-        list($r, $g, $b) = array($m, $v, $k);
-        break;
-      case 3:
-        list($r, $g, $b) = array($m, $n, $v);
-        break;
-      case 4:
-        list($r, $g, $b) = array($k, $m, $v);
-        break;
-      case 5:
-      case 6:
-        list($r, $g, $b) = array($v, $m, $n);
-        break;
-    }
+        case 0:
+            list($r, $g, $b) = array($v, $k, $m);
+            break;
+        case 1:
+            list($r, $g, $b) = array($n, $v, $m);
+            break;
+        case 2:
+            list($r, $g, $b) = array($m, $v, $k);
+            break;
+        case 3:
+            list($r, $g, $b) = array($m, $n, $v);
+            break;
+        case 4:
+            list($r, $g, $b) = array($k, $m, $v);
+            break;
+        case 5:
+        case 6:
+            list($r, $g, $b) = array($v, $m, $n);
+            break;
+        }
         $r = round($r * 255);
         $g = round($g * 255);
         $b = round($b * 255);
         return array('r' => $r, 'g' => $g, 'b' => $b);
     }
 }
+
