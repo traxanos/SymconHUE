@@ -13,10 +13,6 @@ class HUEBridge extends IPSModule
         $this->RegisterPropertyInteger('UpdateInterval', 5);
 
         $this->RegisterTimer('Update', 0, 'HUE_SyncStates($_IPS[\'TARGET\'], 0);');
-
-        if ($oldInterval = @$this->GetIDForIdent('UPDATE')) {
-            IPS_DeleteEvent($oldInterval);
-        }
     }
 
     public function ApplyChanges()
@@ -24,6 +20,9 @@ class HUEBridge extends IPSModule
         parent::ApplyChanges();
 
         $this->SetTimerInterval('Update', $this->ReadPropertyInteger('UpdateInterval') * 1000);
+        if ($oldInterval = @$this->GetIDForIdent('UPDATE')) {
+            IPS_DeleteEvent($oldInterval);
+        }
 
         $this->ValidateConfiguration();
     }
