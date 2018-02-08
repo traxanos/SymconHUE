@@ -240,44 +240,82 @@ abstract class HUEDevice extends IPSModule {
 
     if (get_class($this) == 'HUELight' || get_class($this) == 'HUEGroup'){
       if (get_class($this) == 'HUELight' && !$values['reachable']) {
-        SetValueBoolean($valuesId, false);
+				if(GetValueBoolean($valuesId) != false){
+					SetValueBoolean($valuesId, false);
+				}
       } else {
-        SetValueBoolean($valuesId, $values['on']);
+        if(GetValueBoolean($valuesId) != $values['on']){
+					SetValueBoolean($valuesId, $values['on']);
+				}
       }
 
-      if (@$briId) SetValueInteger($briId, (int)@$values['bri']);
-      if (@$satId) SetValueInteger($satId, (int)@$values['sat']);
-      if (@$hueId) SetValueInteger($hueId, (int)@$values['hue']);
-      if (@$ctId) SetValueInteger($ctId, (int)@$values['ct']);
+      if (@$briId) {
+					if(GetValueInteger($briId) != (int)@$values['bri']){
+						SetValueInteger($briId, (int)@$values['bri']);
+					}
+			}
+      if (@$satId){
+				if (GetValueInteger($satId) != (int)@$values['sat']){
+					SetValueInteger($satId, (int)@$values['sat']);
+				}
+			}
+      if (@$hueId){
+				if(GetValueInteger($hueId) != (int)@$values['hue']){
+					SetValueInteger($hueId, (int)@$values['hue']);
+				}
+			}
+      if (@$ctId){
+				if(GetValueInteger($ctId) != (int)@$values['ct']){
+					SetValueInteger($ctId, (int)@$values['ct']);
+				}
+			}
 
       switch (@$values['colormode']) {
         case 'xy':
         case 'hs':
           $hex = $this->HSV2HEX($values['hue'], $values['sat'], $values['bri']);
-          SetValueInteger($colorId, hexdec($hex));
-          IPS_SetHidden($colorId, false);
-          IPS_SetHidden($satId, false);
+          if(GetValueInteger($colorId) != hexdec($hex)){
+					SetValueInteger($colorId, hexdec($hex));
+						IPS_SetHidden($colorId, false);
+						IPS_SetHidden($satId, false);
+					}
           if (@$ctId) IPS_SetHidden($ctId, true);
-          if (@$cmId) SetValueInteger($cmId, 0);
+          if (@$cmId){
+						if(GetValueInteger($cmId) != 0){
+							SetValueInteger($cmId, 0);
+						}
+					}
           break;
         case 'ct':
           if(@$colorId) IPS_SetHidden($colorId, true);
           if(@$satId) IPS_SetHidden($satId, true);
           IPS_SetHidden($ctId, false);
-          SetValueInteger($cmId, 1);
+          if(GetValueInteger($cmId) != 1){
+						SetValueInteger($cmId, 1);
+					}
           break;
       }
 
     } elseif (get_class($this) == 'HUESensor') {
       if (@$presenceId && isset($values_state['presence'])) {
-        SetValueBoolean($presenceId, $values_state['presence']);
-        if (@$batteryId) SetValueInteger($batteryId, $values['battery']); // only update battery from presence
+        if(GetValueBoolean($presenceId) != $values_state['presence']){
+					SetValueBoolean($presenceId, $values_state['presence']);
+				}
+        if (@$batteryId){
+					if(GetValueInteger($batteryId) != $values['battery']){
+						SetValueInteger($batteryId, $values['battery']); // only update battery from presence
+					}
+				}
       }
       if (@$illuminationId && isset($values_state['lightlevel'])) {
-        SetValueFloat($illuminationId, $values_state['lightlevel']);
+        if (GetValueFloat($illuminationId) != $values_state['lightlevel']){
+					SetValueFloat($illuminationId, $values_state['lightlevel']);
+				}
       }
       if (@$temperatureId && isset($values_state['temperature'])) {
-        SetValueFloat($temperatureId, ($values_state['temperature']/100));
+        if(GetValueFloat($temperatureId) != ($values_state['temperature']/100)){
+					SetValueFloat($temperatureId, ($values_state['temperature']/100));
+				}
       }
     }
   }
@@ -439,7 +477,9 @@ abstract class HUEDevice extends IPSModule {
           $colorNewValue = $value;
           $hex = str_pad(dechex($value), 6, 0, STR_PAD_LEFT);
           $hsv = $this->HEX2HSV($hex);
-          SetValueInteger($colorId, $value);
+					if($value != GetValueInteger($colorId)){
+						SetValueInteger($colorId, $value);
+					}
           $hueNewValue = $hsv['h'];
           $briNewValue = $hsv['v'];
           $satNewValue = $hsv['s'];
@@ -450,7 +490,9 @@ abstract class HUEDevice extends IPSModule {
           if (IPS_GetProperty($this->InstanceID, 'LightFeatures') != 3) {
             if ($cmValue == '0') {
               $newHex = $this->HSV2HEX($hueValue, $satValue, $briNewValue);
-              SetValueInteger($colorId, hexdec($newHex));
+							if(GetValueInteger($colorId) != hexdec($newHex)){
+								SetValueInteger($colorId, hexdec($newHex));
+							}
               $hueNewValue = $hueValue;
               $satNewValue = $satValue;
             } else {
@@ -462,7 +504,9 @@ abstract class HUEDevice extends IPSModule {
           $cmNewValue = 0;
           $satNewValue = $value;
           $newHex = $this->HSV2HEX($hueValue, $satNewValue, $briValue);
-          SetValueInteger($colorId, hexdec($newHex));
+					if(GetValueInteger($colorId) != hexdec($newHex)){
+						SetValueInteger($colorId, hexdec($newHex));
+					}
           $hueNewValue = $hueValue;
           $briNewValue = $briValue;
           break;
@@ -484,10 +528,13 @@ abstract class HUEDevice extends IPSModule {
             $satNewValue = $satValue;
             $briNewValue = $briValue;
             $newHex = $this->HSV2HEX($hueValue, $satValue, $briValue);
-            SetValueInteger($colorId, hexdec($newHex));
-            IPS_SetHidden($colorId, false);
-            IPS_SetHidden($ctId, true);
-            IPS_SetHidden($satId, false);
+            if(GetValueInteger($colorId) != hexdec($newHex)){
+							SetValueInteger($colorId, hexdec($newHex));
+							IPS_SetHidden($colorId, false);
+							IPS_SetHidden($ctId, true);
+							IPS_SetHidden($satId, false);
+						}
+            
           }
           break;
       }
@@ -508,23 +555,33 @@ abstract class HUEDevice extends IPSModule {
       $changes['on'] = $stateNewValue;
     }
     if (isset($hueNewValue)) {
-      SetValueInteger($hueId, $hueNewValue);
+			if(GetValueInteger($hueId) != $hueNewValue){
+				SetValueInteger($hueId, $hueNewValue);
+			}
       $changes['hue'] = $hueNewValue;
     }
     if (isset($satNewValue)) {
-      SetValueInteger($satId, $satNewValue);
+			if(GetValueInteger($satId) != $satNewValue){
+				SetValueInteger($satId, $satNewValue);
+			}
       $changes['sat'] = $satNewValue;
     }
     if (isset($briNewValue)) {
-      SetValueInteger($briId, $briNewValue);
+      if(GetValueInteger($briId) != $briNewValue){
+				SetValueInteger($briId, $briNewValue);
+			}
       $changes['bri'] = $briNewValue;
     }
     if (isset($ctNewValue)) {
-      SetValueInteger($ctId, $ctNewValue);
+      if(GetValueInteger($ctId) != $ctNewValue){
+				SetValueInteger($ctId, $ctNewValue);
+			}
       $changes['ct'] = $ctNewValue;
     }
     if (isset($cmNewValue)) {
-      SetValueInteger($cmId, $cmNewValue);
+			if(GetValueInteger($cmId) != $cmNewValue){
+				SetValueInteger($cmId, $cmNewValue);
+			}
       //$changes['colormode'] = $cmNewValue == 1 ? 'ct' : 'hs';
     }
 
