@@ -1,6 +1,6 @@
 <?php
 
-require_once(__DIR__ . "/../HUEDevice.php");
+require_once __DIR__ . "/../HUEDevice.php";
 
 class HUESensor extends HUEDevice
 {

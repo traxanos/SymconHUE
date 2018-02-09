@@ -1,30 +1,30 @@
 {
-	"translations": {
-		"de": {
-			"Lamp": "Lampe",
-			"Group": "Gruppe",
-			"Sensor": "Sensor",
-			"Interval": "Intervall",
-			"Seconds": "Sekunden",
-			"Sync devices": "Geräte abgleichen",
-			"Register user": "Benutzer abgleichen",
-			"Refresh status": "Status abgleichen",
-			"The registration was successful. Close the configuration mask to apply the username.": "Die Registrierung war erfoglreich. Schließen Sie die Konfigurationsmaske, damit der Benutzername übernommen wird.",
-			"Lamps could not be synced because the lamps category was not assigned.": "Lampen konnten nicht syncronisiert werden, da die Lampenkategorie nicht zugewiesen wurde.",
-			"Groups could not be synced because the groups category was not assigned.": "Gruppen konnten nicht syncronisiert werden, da die Gruppenkategorie nicht zugewiesen wurde.",
-			"Sensors could not be synced because the sensors category was not assigned.": "Sensoren konnten nicht syncronisiert werden, da die Sensorenkategorie nicht zugewiesen wurde.",
-			"Please check configuration.": "Bitte alle Konfigurationsparameter eintragen.",
-			"User is not registered.": "User ist nicht registriert.",
-			"User could not be registered. Please press the button on bridge.": "Benutzer konnte nicht registriert werden. Bitte drücken Sie den Knopf auf der Bridge.",
-			"Bridge isn't reachable.": "Bridge ist nicht erreichbar.",
-			"Unknown error!": "Unbekannter Fehler!",
-			"Lamps category": "Lampenkategorie",
-			"Groups category": "Gruppenkategorie",
-			"Sensors category": "Sensorenkategorie",
-                        "Bridge was created.": "Bridge wurde erstellt.",
-                        "Bridge is active.": "Bridge ist aktiv.",
-                        "Bridge was deleted.": "Bridge wurde gelöscht.",
-			"Type": "Typ"
-		}
-	}
+  "translations": {
+    "de": {
+      "Lamp": "Lampe",
+      "Group": "Gruppe",
+      "Sensor": "Sensor",
+      "Interval": "Intervall",
+      "Seconds": "Sekunden",
+      "Sync devices": "Geräte abgleichen",
+      "Register user": "Benutzer abgleichen",
+      "Refresh status": "Status abgleichen",
+      "The registration was successful. Close the configuration mask to apply the username.": "Die Registrierung war erfoglreich. Schließen Sie die Konfigurationsmaske, damit der Benutzername übernommen wird.",
+      "Lamps could not be synced because the lamps category was not assigned.": "Lampen konnten nicht syncronisiert werden, da die Lampenkategorie nicht zugewiesen wurde.",
+      "Groups could not be synced because the groups category was not assigned.": "Gruppen konnten nicht syncronisiert werden, da die Gruppenkategorie nicht zugewiesen wurde.",
+      "Sensors could not be synced because the sensors category was not assigned.": "Sensoren konnten nicht syncronisiert werden, da die Sensorenkategorie nicht zugewiesen wurde.",
+      "Please check configuration.": "Bitte alle Konfigurationsparameter eintragen.",
+      "User is not registered.": "User ist nicht registriert.",
+      "User could not be registered. Please press the button on bridge.": "Benutzer konnte nicht registriert werden. Bitte drücken Sie den Knopf auf der Bridge.",
+      "Bridge isn't reachable.": "Bridge ist nicht erreichbar.",
+      "Unknown error!": "Unbekannter Fehler!",
+      "Lamps category": "Lampenkategorie",
+      "Groups category": "Gruppenkategorie",
+      "Sensors category": "Sensorenkategorie",
+      "Bridge was created.": "Bridge wurde erstellt.",
+      "Bridge is active.": "Bridge ist aktiv.",
+      "Bridge was deleted.": "Bridge wurde gelöscht.",
+      "Type": "Typ"
+    }
+  }
 }

@@ -440,14 +440,16 @@ abstract class HUEDevice extends IPSModule
                 $stateNewValue = true;
                 $hueNewValue = $value;
                 $newHex = $this->HSV2HEX($hueNewValue, $satValue, $briValue);
-                if (isset($colorId)) SetValueInteger($colorId, hexdec($newHex));
+                if (isset($colorId)) { SetValueInteger($colorId, hexdec($newHex));
+                }
                 break;
             case 'COLOR':
                 $stateNewValue = true;
                 $colorNewValue = $value;
                 $hex = str_pad(dechex($value), 6, 0, STR_PAD_LEFT);
                 $hsv = $this->HEX2HSV($hex);
-                if (isset($colorId)) SetValueInteger($colorId, hexdec($value));
+                if (isset($colorId)) { SetValueInteger($colorId, hexdec($value));
+                }
                 $hueNewValue = $hsv['h'];
                 $briNewValue = $hsv['v'];
                 $satNewValue = $hsv['s'];
@@ -458,7 +460,8 @@ abstract class HUEDevice extends IPSModule
                 if (IPS_GetProperty($this->InstanceID, 'LightFeatures') != 3) {
                     if ($cmValue == '0') {
                         $newHex = $this->HSV2HEX($hueValue, $satValue, $briNewValue);
-                        if (isset($colorId)) SetValueInteger($colorId, hexdec($newHex));
+                        if (isset($colorId)) { SetValueInteger($colorId, hexdec($newHex));
+                        }
                         $hueNewValue = $hueValue;
                         $satNewValue = $satValue;
                     } else {
@@ -472,7 +475,8 @@ abstract class HUEDevice extends IPSModule
                 $cmNewValue = 0;
                 $satNewValue = $value;
                 $newHex = $this->HSV2HEX($hueValue, $satNewValue, $briValue);
-                if (isset($colorId)) SetValueInteger($colorId, hexdec($newHex));
+                if (isset($colorId)) { SetValueInteger($colorId, hexdec($newHex));
+                }
                 $hueNewValue = $hueValue;
                 $briNewValue = $briValue;
                 break;
@@ -645,4 +649,3 @@ abstract class HUEDevice extends IPSModule
         return array('r' => $r, 'g' => $g, 'b' => $b);
     }
 }
-
