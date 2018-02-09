@@ -7,7 +7,7 @@
       "Interval": "Intervall",
       "Seconds": "Sekunden",
       "Sync devices": "Geräte abgleichen",
-      "Register user": "Benutzer abgleichen",
+      "Register user": "Benutzer registrieren",
       "Refresh status": "Status abgleichen",
       "The registration was successful. Close the configuration mask to apply the username.": "Die Registrierung war erfoglreich. Schließen Sie die Konfigurationsmaske, damit der Benutzername übernommen wird.",
       "Lamps could not be synced because the lamps category was not assigned.": "Lampen konnten nicht syncronisiert werden, da die Lampenkategorie nicht zugewiesen wurde.",
