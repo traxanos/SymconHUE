@@ -437,13 +437,17 @@ abstract class HUEDevice extends IPSModule
                 $alert = $value;
                 break;
             case 'HUE':
+                $stateNewValue = true;
                 $hueNewValue = $value;
+                $newHex = $this->HSV2HEX($hueNewValue, $satValue, $briValue);
+                if (isset($colorId)) SetValueInteger($colorId, hexdec($newHex));
                 break;
             case 'COLOR':
+                $stateNewValue = true;
                 $colorNewValue = $value;
                 $hex = str_pad(dechex($value), 6, 0, STR_PAD_LEFT);
                 $hsv = $this->HEX2HSV($hex);
-                SetValueInteger($colorId, $value);
+                if (isset($colorId)) SetValueInteger($colorId, hexdec($value));
                 $hueNewValue = $hsv['h'];
                 $briNewValue = $hsv['v'];
                 $satNewValue = $hsv['s'];
@@ -454,28 +458,32 @@ abstract class HUEDevice extends IPSModule
                 if (IPS_GetProperty($this->InstanceID, 'LightFeatures') != 3) {
                     if ($cmValue == '0') {
                         $newHex = $this->HSV2HEX($hueValue, $satValue, $briNewValue);
-                        SetValueInteger($colorId, hexdec($newHex));
+                        if (isset($colorId)) SetValueInteger($colorId, hexdec($newHex));
                         $hueNewValue = $hueValue;
                         $satNewValue = $satValue;
                     } else {
                         $ctNewValue = $ctValue;
                     }
                 }
+                $stateNewValue = ($briNewValue > 0);
                 break;
             case 'SATURATION':
+                $stateNewValue = true;
                 $cmNewValue = 0;
                 $satNewValue = $value;
                 $newHex = $this->HSV2HEX($hueValue, $satNewValue, $briValue);
-                SetValueInteger($colorId, hexdec($newHex));
+                if (isset($colorId)) SetValueInteger($colorId, hexdec($newHex));
                 $hueNewValue = $hueValue;
                 $briNewValue = $briValue;
                 break;
             case 'COLOR_TEMPERATURE':
+                $stateNewValue = true;
                 $cmNewValue = 1;
                 $ctNewValue = $value;
                 $briNewValue = $briValue;
                 break;
             case 'COLOR_MODE':
+                $stateNewValue = true;
                 $cmNewValue = $value;
                 if ($cmNewValue == 1) {
                     $ctNewValue = $ctValue;
@@ -494,14 +502,6 @@ abstract class HUEDevice extends IPSModule
                 }
                 break;
             }
-        }
-
-        // auto parameter
-        if (isset($satNewValue) || isset($hueNewValue) || isset($ctNewValue)) {
-            $stateNewValue = true;
-        }
-        if (isset($briNewValue)) {
-            $stateNewValue = ($briNewValue > 0);
         }
 
         $changes = array();
