@@ -12,79 +12,79 @@
     {
       "name": "UpdateInterval",
       "type": "IntervalBox",
-      "caption": "Sekunden"
+      "caption": "Seconds"
     },
     {
       "name": "LightsCategory",
       "type": "SelectCategory",
-      "caption": "Lampenkategorie"
+      "caption": "Lamps category"
     },
     {
       "name": "GroupsCategory",
       "type": "SelectCategory",
-      "caption": "Gruppenkategorie"
+      "caption": "Groups category"
     },
     {
       "name": "SensorsCategory",
       "type": "SelectCategory",
-      "caption": "Sensorenkategorie"
+      "caption": "Sensors category"
     }
   ],
   "actions": [{
       "type": "Button",
-      "label": "Geräte abgleichen",
+      "label": "Sync devices",
       "onClick": "HUE_SyncDevices($id);"
     },
     {
       "type": "Button",
-      "label": "User registrieren",
+      "label": "Register user",
       "onClick": "HUE_RegisterUser($id);"
     },
     {
       "type": "Button",
-      "label": "Status abgleichen",
-      "onClick": "HUE_SyncStates($id); echo 'Fertig';"
+      "label": "Refresh status",
+      "onClick": "HUE_SyncStates($id);"
     }
   ],
   "status": [{
       "code": 101,
       "icon": "active",
-      "caption": "Bridge wird erstellt."
+      "caption": "Bridge was created."
     },
     {
       "code": 102,
       "icon": "active",
-      "caption": "Bridge is aktiv."
+      "caption": "Bridge is active."
     },
     {
       "code": 103,
       "icon": "active",
-      "caption": "Bridge wird gelöscht."
+      "caption": "Bridge was deleted."
     },
     {
       "code": 104,
       "icon": "inactive",
-      "caption": "Bitte alle Konfigurationsparameter eintragen."
+      "caption": "Please check configuration."
     },
     {
       "code": 201,
       "icon": "error",
-      "caption": "User ist nicht registriert."
+      "caption": "User is not registered."
     },
     {
       "code": 202,
       "icon": "error",
-      "caption": "User konnte nicht registriert werden. Bitte drücken Sie den Knopf auf dem Bridge beim Registrieren."
+      "caption": "User could not be registered. Please press the button on bridge."
     },
     {
       "code": 203,
       "icon": "error",
-      "caption": "Bridge ist nicht erreichbar."
+      "caption": "Bridge isn't reachable."
     },
     {
       "code": 299,
       "icon": "error",
-      "caption": "Unbekannter Fehler aufgetreten."
+      "caption": "Unknown error!"
     }
   ]
 }

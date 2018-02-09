@@ -133,7 +133,7 @@ class HUEBridge extends IPSModule
                     $user = $result[0]->success->username;
                     IPS_SetConfiguration($this->InstanceID, json_encode(array('User' => $user)));
                     IPS_ApplyChanges($this->InstanceID);
-                    print_r('Die Registrierung war erfoglreich. Schließen Sie die Konfigurationsmaske, damit der Benutzername übernommen wird.');
+                    print_r($this->Translate('The registration was successful. Close the configuration mask to apply the username.'));
                     $this->SetStatus(102);
                 } else {
                     $this->SetStatus(202);
@@ -158,7 +158,7 @@ class HUEBridge extends IPSModule
                 foreach ($lights as $lightId => $light) {
                     $name = utf8_decode((string)$light->name);
                     $uniqueId = (string)$light->uniqueid;
-                    echo "Lampe \"$name\" ($lightId - $uniqueId)\n";
+                    echo $this->Translate('Lamp') . " \"$name\" ($lightId - $uniqueId)\n";
 
                     $deviceId = $this->GetDeviceByUniqueId($uniqueId);
 
@@ -182,8 +182,8 @@ class HUEBridge extends IPSModule
                 }
             }
         } else {
-            echo 'Lampen konnten nicht syncronisiert werden, da die Lampenkategorie nicht zugewiesen wurde.';
-            IPS_LogMessage('SymconHUE', 'Lampen konnten nicht syncronisiert werden, da die Lampenkategorie nicht zugewiesen wurde.');
+            echo $this->Translate('Lamps could not be synced because the lamps category was not assigned.') . "\n";
+            IPS_LogMessage('SymconHUE', $this->Translate('Lamps could not be synced because the lamps category was not assigned.'));
         }
 
         if (@$groupsCategoryId > 0) {
@@ -194,7 +194,7 @@ class HUEBridge extends IPSModule
             if ($groups) {
                 foreach ($groups as $groupId => $group) {
                     $name = utf8_decode((string)$group->name);
-                    echo "Gruppe \"$name\" ($groupId)\n";
+                    echo $this->Translate('Group') ." \"$name\" ($groupId)\n";
 
                     $deviceId = $this->GetDeviceByGroupId($groupId);
                     if ($deviceId == 0) {
@@ -218,8 +218,8 @@ class HUEBridge extends IPSModule
                 }
             }
         } else {
-            echo 'Gruppen konnten nicht syncronisiert werden, da die Gruppenkategorie nicht zugewiesen wurde.';
-            IPS_LogMessage('SymconHUE', 'Gruppe konnten nicht syncronisiert werden, da die Gruppenkategorie nicht zugewiesen wurde.');
+            echo $this->Translate('Groups could not be synced because the groups category was not assigned.') . "\n";
+            IPS_LogMessage('SymconHUE', $this->Translate('Groups could not be synced because the groups category was not assigned.'));
         }
 
         if (@$sensorsCategoryId > 0) {
@@ -232,7 +232,7 @@ class HUEBridge extends IPSModule
                         $uniqueId = (string)$sensor->uniqueid;
                         // only use first 26 characters as uniqueid
                         $uniqueId = substr($uniqueId, 0, 26);
-                        echo "Sensor \"$name\" ($sensorId - $uniqueId)\n";
+                        echo $this->Translate('Sensor') ." \"$name\" ($sensorId - $uniqueId)\n";
 
                         $deviceId = $this->GetDeviceByUniqueIdSensor($uniqueId);
                         if ($deviceId == 0) {
@@ -257,8 +257,8 @@ class HUEBridge extends IPSModule
                 }
             }
         } else {
-            echo 'Sensoren konnten nicht syncronisiert werden, da die Sensorenkategorie nicht zugewiesen wurde.';
-            IPS_LogMessage('SymconHUE', 'Sensoren konnten nicht syncronisiert werden, da die Sensorenkategorie nicht zugewiesen wurde.');
+            echo $this->Translate('Sensors could not be synced because the sensors category was not assigned.') . "\n";
+            IPS_LogMessage('SymconHUE', $this->Translate('Sensors could not be synced because the sensors category was not assigned.'));
         }
         return true;
     }

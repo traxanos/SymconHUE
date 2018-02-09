@@ -2,70 +2,70 @@
   "elements": [{
     "type": "NumberSpinner",
     "name": "GroupId",
-    "caption": "Gruppe"
+    "caption": "Group"
   }, {
     "type": "Label",
-    "label": "Die nachfolgenden Werte, werden automatisch aktualisiert bei \"Status neu einlesen.\""
+    "label": "The following values will be updates automaticliy during >Refresh status<."
   }, {
     "type": "Select",
     "name": "LightFeatures",
-    "caption": "Funktionen",
+    "caption": "Features",
     "options": [{
         "value": 0,
-        "label": "Farbe + Temperatur"
+        "label": "Color + Temperature"
       },
       {
         "value": 1,
-        "label": "Farbe"
+        "label": "Color"
       },
       {
         "value": 2,
-        "label": "Temperatur"
+        "label": "Temperature"
       },
       {
         "value": 3,
-        "label": "Helligkeit"
+        "label": "Brightness"
       },
       {
         "value": 4,
-        "label": "Keine"
+        "label": "Switch only"
       }
     ]
   }],
   "actions": [{
     "type": "Button",
-    "label": "Status neu einlesen",
+    "label": "Refresh status",
     "onClick": "HUE_RequestData($id);"
   }],
   "status": [{
       "code": 101,
       "icon": "active",
-      "caption": "Gruppe wird erstellt."
+      "caption": "Group was created."
     },
     {
       "code": 102,
       "icon": "active",
-      "caption": "Gruppe ist aktiv."
+      "caption": "Group is active."
     },
     {
       "code": 103,
       "icon": "active",
-      "caption": "Gruppe wird gelöscht."
+      "caption": "Group was deleted."
     },
     {
       "code": 104,
       "icon": "inactive",
-      "caption": "Bitte die Gruppe über die Bridge anlegen lassen."
+      "caption": "Please have the group created over the bridge."
     },
     {
       "code": 201,
       "icon": "error",
-      "caption": "Die Gruppe ist nicht erreichbar."
+      "caption": "Group isn't reachable."
     },
     {
       "code": 202,
       "icon": "error",
-      "caption": "Es ist ein unbekannter Fehler aufgetreten."
+      "caption": "Unknown error"
     }
   ]
 }

@@ -12,8 +12,8 @@ abstract class HUEDevice extends IPSModule
         if (!IPS_VariableProfileExists('ColorModeSelect.Hue')) {
             IPS_CreateVariableProfile('ColorModeSelect.Hue', 1);
         }
-        IPS_SetVariableProfileAssociation('ColorModeSelect.Hue', 0, 'Farbe', '', 0x000000);
-        IPS_SetVariableProfileAssociation('ColorModeSelect.Hue', 1, 'Farbtemperatur', '', 0x000000);
+        IPS_SetVariableProfileAssociation('ColorModeSelect.Hue', 0, $this->Translate('Color'), '', 0x000000);
+        IPS_SetVariableProfileAssociation('ColorModeSelect.Hue', 1, $this->Translate('Color temperature'), '', 0x000000);
         IPS_SetVariableProfileIcon('ColorModeSelect.Hue', 'ArrowRight');
 
         if (!IPS_VariableProfileExists('ColorTemperatureSelect.Hue')) {
@@ -153,17 +153,17 @@ abstract class HUEDevice extends IPSModule
          */
 
         if (get_class($this) == 'HUELight' || get_class($this) == 'HUEGroup') {
-            $this->MaintainVariable("STATE", "Zustand", 0, "~Switch", 1, true);
+            $this->MaintainVariable("STATE", $this->Translate('State'), 0, "~Switch", 1, true);
             $this->EnableAction("STATE");
             $valuesId = $this->GetIDForIdent("STATE");
 
-            $this->MaintainVariable("COLOR_MODE", "Modus", 1, "ColorModeSelect.Hue", 2, true);
+            $this->MaintainVariable("COLOR_MODE", $this->Translate('Mode'), 1, "ColorModeSelect.Hue", 2, true);
             $this->EnableAction("COLOR_MODE");
             $cmId = $this->GetIDForIdent("COLOR_MODE");
             IPS_SetHidden($cmId, $lightFeature != 0);
 
             if ($lightFeature != 4) {
-                $this->MaintainVariable("BRIGHTNESS", "Helligkeit", 1, "Intensity.Hue", 5, true);
+                $this->MaintainVariable("BRIGHTNESS", $this->Translate('Brightness'), 1, "Intensity.Hue", 5, true);
                 $this->EnableAction("BRIGHTNESS");
                 $briId = $this->GetIDForIdent("BRIGHTNESS");
             } else {
@@ -171,7 +171,7 @@ abstract class HUEDevice extends IPSModule
             }
 
             if ($lightFeature == 0 || $lightFeature == 1) {
-                $this->MaintainVariable("HUE", "Hue", 1, "", 1000, true);
+                $this->MaintainVariable("HUE", $this->Translate('Hue'), 1, "", 1000, true);
                 $hueId = $this->GetIDForIdent("HUE");
                 IPS_SetHidden($hueId, true);
             } else {
@@ -179,7 +179,7 @@ abstract class HUEDevice extends IPSModule
             }
 
             if ($lightFeature == 0 || $lightFeature == 2) {
-                $this->MaintainVariable("COLOR_TEMPERATURE", "Farbtemperatur", 1, "ColorTemperatureSelect.Hue", 4, true);
+                $this->MaintainVariable("COLOR_TEMPERATURE", $this->Translate('Color temperature'), 1, "ColorTemperatureSelect.Hue", 4, true);
                 $this->EnableAction("COLOR_TEMPERATURE");
                 $ctId = $this->GetIDForIdent("COLOR_TEMPERATURE");
             } else {
@@ -187,12 +187,12 @@ abstract class HUEDevice extends IPSModule
             }
 
             if ($lightFeature == 0 || $lightFeature == 1) {
-                $this->MaintainVariable("COLOR", "Farbe", 1, "~HexColor", 3, true);
+                $this->MaintainVariable("COLOR", $this->Translate('Color'), 1, "~HexColor", 3, true);
                 $this->EnableAction("COLOR");
                 $colorId = $this->GetIDForIdent("COLOR");
                 IPS_SetHidden($colorId, true);
 
-                $this->MaintainVariable("SATURATION", utf8_decode("Sättigung"), 1, "Intensity.Hue", 6, true);
+                $this->MaintainVariable("SATURATION", $this->Translate('Saturation'), 1, "Intensity.Hue", 6, true);
                 $this->EnableAction("SATURATION");
                 $satId = $this->GetIDForIdent("SATURATION");
             } else {
@@ -200,16 +200,16 @@ abstract class HUEDevice extends IPSModule
                 $this->UnregisterVariable("SATURATION");
             }
         } elseif (get_class($this) == 'HUESensor') {
-            $this->MaintainVariable("PRESENCE", "Anwesenheit", 0, "~Presence", 1, true);
+            $this->MaintainVariable("PRESENCE", $this->Translate('Presence'), 0, "~Presence", 1, true);
             $presenceId = $this->GetIDForIdent("PRESENCE");
 
-            $this->MaintainVariable("TEMPERATURE", "Temperatur", 2, "~Temperature", 2, true);
+            $this->MaintainVariable("TEMPERATURE", $this->Translate('Temperature'), 2, "~Temperature", 2, true);
             $temperatureId = $this->GetIDForIdent("TEMPERATURE");
 
-            $this->MaintainVariable("ILLUMINATION", "Erleuchtung", 2, "~Illumination.F", 3, true);
+            $this->MaintainVariable("ILLUMINATION", $this->Translate('Illumination'), 2, "~Illumination.F", 3, true);
             $illuminationId = $this->GetIDForIdent("ILLUMINATION");
 
-            $this->MaintainVariable("BATTERY", "Batterie", 1, "~Battery.100", 4, true);
+            $this->MaintainVariable("BATTERY", $this->Translate('Battery'), 1, "~Battery.100", 4, true);
             $batteryId = $this->GetIDForIdent("BATTERY");
         }
 
