@@ -283,7 +283,7 @@ abstract class HUEDevice extends IPSModule
     }
 
     /*
-     * HUE_RequestData($id)
+     * HUE_RequestData(int $id)
      * Abgleich des Status einer Lampe oder Gruppe (HUE_SyncStates sollte bevorzugewerden,
      * da direkt alle Lampen abgeglichen werden mit nur 1 Request zur HUE Bridge)
      */
@@ -299,7 +299,7 @@ abstract class HUEDevice extends IPSModule
         }
     }
 
-    public function RequestAction($key, $value)
+    public function RequestAction(string $key, $value)
     {
         switch ($key) {
         case 'STATE':
@@ -320,7 +320,7 @@ abstract class HUEDevice extends IPSModule
     }
 
     /*
-     * HUE_GetValue($id, $key)
+     * HUE_GetValue(int $id, string $key)
      * Liefert einen Lampenparameter (siehe HUE_SetValue)
      */
     public function GetValue(string $key)
@@ -337,7 +337,7 @@ abstract class HUEDevice extends IPSModule
      * HUE_SetValue(int $id, string $key, $value)
      * Anpassung eines Lampenparameter siehe SetValues
      */
-    public function SetValue($key, $value)
+    public function SetValue(string $key, $value)
     {
         return $this->SetValues(array($key => $value));
     }
