@@ -299,7 +299,7 @@ abstract class HUEDevice extends IPSModule
         }
     }
 
-    public function RequestAction(string $key, $value)
+    public function RequestAction($key, $value)
     {
         switch ($key) {
         case 'STATE':
