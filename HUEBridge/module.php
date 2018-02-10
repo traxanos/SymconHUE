@@ -133,7 +133,7 @@ class HUEBridge extends IPSModule
                     $user = $result[0]->success->username;
                     IPS_SetConfiguration($this->InstanceID, json_encode(array('User' => $user)));
                     IPS_ApplyChanges($this->InstanceID);
-                    print_r($this->Translate('The registration was successful. Close the configuration mask to apply the username.'));
+                    print_r($this->Translate('The registration was successful.') . "\n" . $this->Translate('Close the configuration mask to apply the username.'));
                     $this->SetStatus(102);
                 } else {
                     $this->SetStatus(202);
@@ -158,7 +158,7 @@ class HUEBridge extends IPSModule
                 foreach ($lights as $lightId => $light) {
                     $name = utf8_decode((string)$light->name);
                     $uniqueId = (string)$light->uniqueid;
-                    echo $this->Translate('Lamp') . " \"$name\" ($lightId - $uniqueId)\n";
+                    echo $this->Translate('Lamp') . ": \"$name\" ($lightId - $uniqueId)\n";
 
                     $deviceId = $this->GetDeviceByUniqueId($uniqueId);
 
@@ -194,7 +194,7 @@ class HUEBridge extends IPSModule
             if ($groups) {
                 foreach ($groups as $groupId => $group) {
                     $name = utf8_decode((string)$group->name);
-                    echo $this->Translate('Group') ." \"$name\" ($groupId)\n";
+                    echo $this->Translate('Group') .": \"$name\" ($groupId)\n";
 
                     $deviceId = $this->GetDeviceByGroupId($groupId);
                     if ($deviceId == 0) {
@@ -232,7 +232,7 @@ class HUEBridge extends IPSModule
                         $uniqueId = (string)$sensor->uniqueid;
                         // only use first 26 characters as uniqueid
                         $uniqueId = substr($uniqueId, 0, 26);
-                        echo $this->Translate('Sensor') ." \"$name\" ($sensorId - $uniqueId)\n";
+                        echo $this->Translate('Sensor') .": \"$name\" ($sensorId - $uniqueId)\n";
 
                         $deviceId = $this->GetDeviceByUniqueIdSensor($uniqueId);
                         if ($deviceId == 0) {

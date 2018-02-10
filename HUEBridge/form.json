@@ -49,27 +49,27 @@
   "status": [{
       "code": 101,
       "icon": "active",
-      "caption": "Bridge was created."
+      "caption": "Bridge was created"
     },
     {
       "code": 102,
       "icon": "active",
-      "caption": "Bridge is active."
+      "caption": "Bridge is active"
     },
     {
       "code": 103,
       "icon": "active",
-      "caption": "Bridge was deleted."
+      "caption": "Bridge was deleted"
     },
     {
       "code": 104,
       "icon": "inactive",
-      "caption": "Please check configuration."
+      "caption": "Please check configuration"
     },
     {
       "code": 201,
       "icon": "error",
-      "caption": "User is not registered."
+      "caption": "User is not registered"
     },
     {
       "code": 202,
@@ -79,7 +79,7 @@
     {
       "code": 203,
       "icon": "error",
-      "caption": "Bridge isn't reachable."
+      "caption": "Bridge is not reachable"
     },
     {
       "code": 299,
