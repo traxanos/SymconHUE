@@ -27,27 +27,27 @@
   "status": [{
       "code": 101,
       "icon": "active",
-      "caption": "Sensor was created."
+      "caption": "Sensor was created"
     },
     {
       "code": 102,
       "icon": "active",
-      "caption": "Sensor is active."
+      "caption": "Sensor is active"
     },
     {
       "code": 103,
       "icon": "active",
-      "caption": "Sensor was deleted."
+      "caption": "Sensor was deleted"
     },
     {
       "code": 104,
       "icon": "inactive",
-      "caption": "Please have the sensor created over the bridge."
+      "caption": "Please have the sensor created over the bridge"
     },
     {
       "code": 201,
       "icon": "error",
-      "caption": "Sensor isn't reachable."
+      "caption": "Sensor is not reachable"
     },
     {
       "code": 202,

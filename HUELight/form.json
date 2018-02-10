@@ -46,38 +46,46 @@
   }],
   "actions": [{
     "type": "Button",
+    "label": "An",
+    "onClick": "HUE_SetState($id, true);"
+  }, {
+    "type": "Button",
+    "label": "Aus",
+    "onClick": "HUE_SetState($id, false);"
+  }, {
+    "type": "Button",
     "label": "Refresh status",
     "onClick": "HUE_RequestData($id);"
   }],
   "status": [{
       "code": 101,
       "icon": "active",
-      "caption": "Lamp was created."
+      "caption": "Lamp was created"
     },
     {
       "code": 102,
       "icon": "active",
-      "caption": "Lamp is active."
+      "caption": "Lamp is active"
     },
     {
       "code": 103,
       "icon": "active",
-      "caption": "Lamp was deleted."
+      "caption": "Lamp was deleted"
     },
     {
       "code": 104,
       "icon": "inactive",
-      "caption": "Please have the lamp created over the bridge."
+      "caption": "Please have the lamp created over the bridge"
     },
     {
       "code": 201,
       "icon": "error",
-      "caption": "Lamp isn't reachable."
+      "caption": "Lamp is not reachable"
     },
     {
       "code": 202,
       "icon": "error",
-      "caption": "Unknown error."
+      "caption": "Unknown error"
     }
   ]
 }

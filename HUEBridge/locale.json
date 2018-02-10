@@ -18,7 +18,7 @@
       "User is not registered": "User ist nicht registriert",
       "User could not be registered. Please press the button on bridge.": "Benutzer konnte nicht registriert werden. Bitte drücken Sie den Knopf auf der Bridge.",
       "Bridge is not reachable.": "Bridge ist nicht erreichbar",
-      "Unknown error!": "Unbekannter Fehler!",
+      "Unknown error": "Unbekannter Fehler",
       "Lamps category": "Lampenkategorie",
       "Groups category": "Gruppenkategorie",
       "Sensors category": "Sensorenkategorie",
