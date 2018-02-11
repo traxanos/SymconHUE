@@ -558,25 +558,34 @@ abstract class HUEDevice extends IPSModule
         return HUE_Request($this->GetBridge(), $path, $changes);
     }
 
-    protected function SetValueBoolean($InstanceId, $value) {
-      $info = IPS_GetVariable($InstanceId);
-      $updated = $info['VariableUpdated'];
-      $last = GetValueBoolean($InstanceId);
-      if ($last != $value || (time() - $this->timerUpdateAfter) >= $updated) return SetValueBoolean($InstanceId, $value);
+    protected function SetValueBoolean($InstanceId, $value)
+    {
+        $info = IPS_GetVariable($InstanceId);
+        $updated = $info['VariableUpdated'];
+        $last = GetValueBoolean($InstanceId);
+        if ($last != $value || (time() - $this->timerUpdateAfter) >= $updated) {
+            return SetValueBoolean($InstanceId, $value);
+        }
     }
 
-    protected function SetValueInteger($InstanceId, $value) {
-      $info = IPS_GetVariable($InstanceId);
-      $updated = $info['VariableUpdated'];
-      $last = GetValueInteger($InstanceId);
-      if ($last != $value || (time() - $this->timerUpdateAfter) >= $updated) return SetValueInteger($InstanceId, $value);
+    protected function SetValueInteger($InstanceId, $value)
+    {
+        $info = IPS_GetVariable($InstanceId);
+        $updated = $info['VariableUpdated'];
+        $last = GetValueInteger($InstanceId);
+        if ($last != $value || (time() - $this->timerUpdateAfter) >= $updated) {
+            return SetValueInteger($InstanceId, $value);
+        }
     }
 
-    protected function SetValueFloat($InstanceId, $value) {
-      $info = IPS_GetVariable($InstanceId);
-      $updated = $info['VariableUpdated'];
-      $last = GetValueFloat($InstanceId);
-      if ($last != $value || (time() - $this->timerUpdateAfter) >= $updated) return SetValueFloat($InstanceId, $value);
+    protected function SetValueFloat($InstanceId, $value)
+    {
+        $info = IPS_GetVariable($InstanceId);
+        $updated = $info['VariableUpdated'];
+        $last = GetValueFloat($InstanceId);
+        if ($last != $value || (time() - $this->timerUpdateAfter) >= $updated) {
+            return SetValueFloat($InstanceId, $value);
+        }
     }
 
 }

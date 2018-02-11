@@ -96,4 +96,3 @@ class HUEMisc
         return array('r' => $r, 'g' => $g, 'b' => $b);
     }
 }
-?>
