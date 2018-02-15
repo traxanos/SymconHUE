@@ -339,7 +339,7 @@ abstract class HUEDevice extends IPSModule
      * HUE_SetValue(int $id, string $key, $value)
      * Anpassung eines Lampenparameter siehe SetValues
      */
-    public function SetValue(string $key, $value)
+    public function SetValue($key, $value)
     {
         return $this->SetValues(array($key => $value));
     }
