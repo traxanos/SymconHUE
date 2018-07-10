@@ -325,7 +325,7 @@ abstract class HUEDevice extends IPSModule
      * HUE_GetValue(int $id, string $key)
      * Liefert einen Lampenparameter (siehe HUE_SetValue)
      */
-    public function GetValue(string $key)
+    public function GetValue($key)
     {
         switch ($key) {
         default:
